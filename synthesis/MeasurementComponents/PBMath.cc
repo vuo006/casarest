@@ -109,10 +109,8 @@ PBMath::PBMath(const RecordInterface& rec)
     Bool usesymmetricbeam;
     usesymmetricbeam=rec.asBool( rec.fieldNumber("usesymmetricbeam"));
 
-    pb_pointer_p = new PBMath1DAiry( dishdiam, blockagediam,
-				     maxrad, reffreq,
-				     BeamSquint(squintdir, squintreffreq),
-				     usesymmetricbeam);
+    //pb_pointer_p = new PBMath1DAiry( dishdiam, blockagediam, maxrad, reffreq, BeamSquint(squintdir, squintreffreq), usesymmetricbeam);
+    pb_pointer_p.reset(new PBMath1DAiry( dishdiam, blockagediam, maxrad, reffreq, BeamSquint(squintdir, squintreffreq), usesymmetricbeam));
 
   } else if (name == "GAUSS") {
 
@@ -132,10 +130,8 @@ PBMath::PBMath(const RecordInterface& rec)
     Bool isthisvp;
     isthisvp=rec.asBool( rec.fieldNumber("isthisvp"));
 
-    pb_pointer_p = new PBMath1DGauss( halfwidth, maxrad, reffreq,
-				      isthisvp,
-				      BeamSquint(squintdir, squintreffreq),
-				      usesymmetricbeam);
+    //pb_pointer_p = new PBMath1DGauss( halfwidth, maxrad, reffreq, isthisvp, BeamSquint(squintdir, squintreffreq), usesymmetricbeam);
+    pb_pointer_p.reset(new PBMath1DGauss( halfwidth, maxrad, reffreq, isthisvp, BeamSquint(squintdir, squintreffreq), usesymmetricbeam));
 
   } else if (name == "POLY") {
 
@@ -155,10 +151,8 @@ PBMath::PBMath(const RecordInterface& rec)
     Bool isthisvp;
     isthisvp=rec.asBool( rec.fieldNumber("isthisvp"));
 
-    pb_pointer_p = new PBMath1DPoly( coeff, maxrad, reffreq,
-				      isthisvp,
-				      BeamSquint(squintdir, squintreffreq),
-				      usesymmetricbeam);
+    //pb_pointer_p = new PBMath1DPoly( coeff, maxrad, reffreq, isthisvp, BeamSquint(squintdir, squintreffreq), usesymmetricbeam);
+    pb_pointer_p.reset(new PBMath1DPoly( coeff, maxrad, reffreq, isthisvp, BeamSquint(squintdir, squintreffreq), usesymmetricbeam));
 
 
   } else if (name == "IPOLY") {
@@ -179,10 +173,8 @@ PBMath::PBMath(const RecordInterface& rec)
     Bool isthisvp;
     isthisvp=rec.asBool( rec.fieldNumber("isthisvp"));
 
-    pb_pointer_p = new PBMath1DIPoly( coeff, maxrad, reffreq,
-				      isthisvp,
-				      BeamSquint(squintdir, squintreffreq),
-				      usesymmetricbeam);
+    //pb_pointer_p = new PBMath1DIPoly( coeff, maxrad, reffreq, isthisvp, BeamSquint(squintdir, squintreffreq), usesymmetricbeam);
+    pb_pointer_p.reset(new PBMath1DIPoly( coeff, maxrad, reffreq, isthisvp, BeamSquint(squintdir, squintreffreq), usesymmetricbeam));
 
   } else if (name == "COSPOLY") {
 
@@ -204,10 +196,10 @@ PBMath::PBMath(const RecordInterface& rec)
     Bool isthisvp;
     isthisvp=rec.asBool( rec.fieldNumber("isthisvp"));
 
-    pb_pointer_p = new PBMath1DCosPoly( coeff, scale, maxrad, reffreq,
+    pb_pointer_p.reset(new PBMath1DCosPoly( coeff, scale, maxrad, reffreq,
 					isthisvp,
 					BeamSquint(squintdir, squintreffreq),
-					usesymmetricbeam);
+					usesymmetricbeam));
 
   } else if (name == "NUMERIC") {
     Vector<Double> vect;
@@ -231,10 +223,8 @@ PBMath::PBMath(const RecordInterface& rec)
       aTempVector(i) = (Float)vect(i);
     }
 
-    pb_pointer_p = new PBMath1DNumeric( aTempVector, maxrad, reffreq,
-					isthisvp,
-					BeamSquint(squintdir, squintreffreq),
-					usesymmetricbeam);
+    //pb_pointer_p = new PBMath1DNumeric( aTempVector, maxrad, reffreq, isthisvp, BeamSquint(squintdir, squintreffreq), usesymmetricbeam);
+    pb_pointer_p.reset(new PBMath1DNumeric( aTempVector, maxrad, reffreq, isthisvp, BeamSquint(squintdir, squintreffreq), usesymmetricbeam));
   } else if (name == "IMAGE") {
 
     String realImageName, imagImageName;
@@ -244,11 +234,13 @@ PBMath::PBMath(const RecordInterface& rec)
     PagedImage<Float> realImage(realImageName);
     if(Table::isReadable(imagImageName)) {
       PagedImage<Float> imagImage(imagImageName);
-      pb_pointer_p = new PBMath2DImage(realImage, imagImage);
+      //pb_pointer_p = new PBMath2DImage(realImage, imagImage);
+      pb_pointer_p.reset(new PBMath2DImage(realImage, imagImage));
     }
     else {
       if(!Table::isReadable(imagImageName)) {
-	pb_pointer_p = new PBMath2DImage(realImage);
+	//pb_pointer_p = new PBMath2DImage(realImage);
+	pb_pointer_p.reset(new PBMath2DImage(realImage));
       }
       else {
 	throw(AipsError("Image "+ realImageName + " is not readable or does not exist"));
@@ -294,8 +286,8 @@ PBMath::PBMath(PBMathInterface::PBClass theClass, Quantity halfWidth,
 {
   LogIO os(LogOrigin("PBMath", "PBMath"));
   if (theClass == PBMathInterface::GAUSS) {
-    pb_pointer_p = new  PBMath1DGauss(halfWidth, maxRad, refFreq,
-				      isThisVP, squint, useSymmetricBeam);
+    //pb_pointer_p = new  PBMath1DGauss(halfWidth, maxRad, refFreq, isThisVP, squint, useSymmetricBeam);
+    pb_pointer_p.reset(new  PBMath1DGauss(halfWidth, maxRad, refFreq, isThisVP, squint, useSymmetricBeam));
   } else {
     os << "Unrecognized voltage pattern class type for this constructor:1" << LogIO::EXCEPTION;
   }
@@ -307,19 +299,16 @@ PBMath::PBMath(PBMathInterface::PBClass theClass, const Vector<Double>& avector,
 {
   LogIO os(LogOrigin("PBMath", "PBMath"));
   if (theClass == PBMathInterface::POLY) {
-    pb_pointer_p = new  PBMath1DPoly(avector, maxRad, refFreq,
-				     isThisVP, squint, useSymmetricBeam);
+    pb_pointer_p.reset(new  PBMath1DPoly(avector, maxRad, refFreq, isThisVP, squint, useSymmetricBeam));
   } else if (theClass == PBMathInterface::IPOLY) {
-    pb_pointer_p = new  PBMath1DIPoly(avector, maxRad, refFreq,
-				     isThisVP, squint, useSymmetricBeam);
+    pb_pointer_p.reset(new  PBMath1DIPoly(avector, maxRad, refFreq, isThisVP, squint, useSymmetricBeam));
   } else if (theClass == PBMathInterface::NUMERIC) {
     Vector<Float> aTempVector;
     aTempVector.resize(avector.nelements());
     for (uInt i = 0; i< avector.nelements(); i++) {
       aTempVector(i) = (Float)avector(i);
     }
-    pb_pointer_p = new  PBMath1DNumeric(aTempVector, maxRad, refFreq,
-				     isThisVP, squint, useSymmetricBeam);
+    pb_pointer_p.reset(new  PBMath1DNumeric(aTempVector, maxRad, refFreq, isThisVP, squint, useSymmetricBeam));
   } else {
     os << "Unrecognized voltage pattern class type for this constructor:2" << LogIO::EXCEPTION;
   }
@@ -330,8 +319,7 @@ PBMath::PBMath(PBMathInterface::PBClass theClass, const Vector<Float>& avector, 
 {
   LogIO os(LogOrigin("PBMath", "PBMath"));
   if (theClass == PBMathInterface::NUMERIC) {
-    pb_pointer_p = new  PBMath1DNumeric(avector, maxRad, refFreq,
-				     isThisVP, squint, useSymmetricBeam);
+    pb_pointer_p.reset(new  PBMath1DNumeric(avector, maxRad, refFreq, isThisVP, squint, useSymmetricBeam));
   } else {
     os << "Unrecognized voltage pattern class type for this constructor:2" << LogIO::EXCEPTION;
   }
@@ -342,7 +330,7 @@ PBMath::PBMath(PBMathInterface::PBClass theClass,
 {
   LogIO os(LogOrigin("PBMath", "PBMath"));
   if (theClass == PBMathInterface::IMAGE) {
-    pb_pointer_p = new  PBMath2DImage(reJones);
+    pb_pointer_p.reset(new  PBMath2DImage(reJones));
   } else {
     os << "Unrecognized voltage pattern class type for this constructor:2" << LogIO::EXCEPTION;
   }
@@ -354,7 +342,7 @@ PBMath::PBMath(PBMathInterface::PBClass theClass,
 {
   LogIO os(LogOrigin("PBMath", "PBMath"));
   if (theClass == PBMathInterface::IMAGE) {
-    pb_pointer_p = new  PBMath2DImage(reJones, imJones);
+    pb_pointer_p.reset(new  PBMath2DImage(reJones, imJones));
   } else {
     os << "Unrecognized voltage pattern class type for this constructor:2" << LogIO::EXCEPTION;
   }
@@ -369,8 +357,7 @@ PBMath::PBMath(PBMathInterface::PBClass theClass, const Vector<Double>& coeff,
 {
   LogIO os(LogOrigin("PBMath", "PBMath"));
   if (theClass == PBMathInterface::COSPOLY) {
-    pb_pointer_p = new  PBMath1DCosPoly(coeff, scales, maxRad, refFreq,
-					isThisVP, squint, useSymmetricBeam);
+    pb_pointer_p.reset(new  PBMath1DCosPoly(coeff, scales, maxRad, refFreq, isThisVP, squint, useSymmetricBeam));
   } else {
     os << "Unrecognized voltage pattern class type for this constructor:3" << LogIO::EXCEPTION;
   }    
@@ -383,8 +370,7 @@ PBMath::PBMath(PBMathInterface::PBClass theClass, Quantity dishDiam,
 {
   LogIO os(LogOrigin("PBMath", "PBMath"));
   if (theClass == PBMathInterface::AIRY) {
-  pb_pointer_p = new  PBMath1DAiry(dishDiam, blockDiam, maxRad, 
-				   refFreq, squint, useSymmetricBeam);
+  pb_pointer_p.reset( new  PBMath1DAiry(dishDiam, blockDiam, maxRad, refFreq, squint, useSymmetricBeam));
   } else {
     os << "Unrecognized voltage pattern class type for this constructor:4" << LogIO::EXCEPTION;
   }
@@ -596,7 +582,7 @@ PBMath::apply(SkyComponent& in,
 
 Bool PBMath::ok() const
 {
-  if (pb_pointer_p.null()) {
+  if (!pb_pointer_p) {
     return False;
   } else {
     return pb_pointer_p->ok();
@@ -1001,8 +987,7 @@ void PBMath::initByDiameter(Double diameter, Bool useSymmetricBeam,
 
   if(diameter>0.){
     Double scalesize = 1.1998662 * 25.0/diameter;
-    pb_pointer_p = new PBMath1DNumeric(vlanum, Quantity(scalesize,"'"), 
-				       Quantity(43.0,"GHz"), False);
+    pb_pointer_p.reset(new PBMath1DNumeric(vlanum, Quantity(scalesize,"'"), Quantity(43.0,"GHz"), False));
   }
   else if(diameter==0.){
     throw(AipsError("Attempt to initialize PBMath with zero dish diameter."));
@@ -1063,7 +1048,7 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
       coef(2)= 6.480550e-07;
       coef(3)= -1.267928e-10;
 
-      pb_pointer_p = new PBMath1DPoly( coef, Quantity(43.0,"'"), Quantity(1.0,"GHz"));
+      pb_pointer_p.reset(new PBMath1DPoly( coef, Quantity(43.0,"'"), Quantity(1.0,"GHz")));
     }
   break;
   case VLA_INVERSE:
@@ -1078,18 +1063,16 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
       coef(3)= -0.5311695e-8;
       coef(4)= 0.3980963e-11;
 
-      pb_pointer_p = new PBMath1DIPoly( coef, Quantity(45.0,"'"), Quantity(1.0,"GHz"));
+      pb_pointer_p.reset(new PBMath1DIPoly( coef, Quantity(45.0,"'"), Quantity(1.0,"GHz")));
     }
   break;
   case VLA_NVSS:
     // No squint assumed here
-    pb_pointer_p = new PBMath1DAiry( Quantity(24.5,"m"), Quantity(0.0,"m"),
-				     Quantity(0.8564,"deg"), Quantity(1.0,"GHz"));
+    pb_pointer_p.reset(new PBMath1DAiry( Quantity(24.5,"m"), Quantity(0.0,"m"), Quantity(0.8564,"deg"), Quantity(1.0,"GHz")));
     break;
   case VLA_2NULL:
     // No squint assumed here
-    pb_pointer_p = new PBMath1DAiry( Quantity(24.5,"m"), Quantity(0.0,"m"),
-				     Quantity(1.566,"deg"), Quantity(1.0,"GHz"));
+    pb_pointer_p.reset(new PBMath1DAiry( Quantity(24.5,"m"), Quantity(0.0,"m"), Quantity(1.566,"deg"), Quantity(1.0,"GHz")));
     break;
 
 
@@ -1108,26 +1091,26 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
     {
       Float mag = 1.21;  // half-squint magnitude in arcmin at 1 GHz)
       Float ang = -135.0*C::pi/180.0;    // squint orientation, rads, North of +AZ axis
-      pb_pointer_p = new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"),
+      pb_pointer_p.reset(new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"),
 				       Quantity(0.8564,"deg"), Quantity(1.0,"GHz"),
 				       BeamSquint(MDirection(Quantity((mag*cos(ang)), "'"),
 							     Quantity((mag*sin(ang)), "'"),
 							     MDirection::Ref(MDirection::AZEL)),
 						  Quantity(1.0, "GHz")),
-				       useSymmetricBeam);
+				       useSymmetricBeam));
     }
     break;
   case VLA_C:
     {
       Float mag = 1.21;  // half-squint magnitude in arcmin at 1 GHz)
       Float ang = 25.0*C::pi/180.0;    // squint orientation, rads, North of +AZ axis
-      pb_pointer_p = new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"),
+      pb_pointer_p.reset(new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"),
 				       Quantity(0.8564,"deg"), Quantity(1.0,"GHz"),
 				       BeamSquint(MDirection(Quantity((mag*cos(ang)), "'"),
 							     Quantity((mag*sin(ang)), "'"),
 							     MDirection::Ref(MDirection::AZEL)),
 						  Quantity(1.0, "GHz")),
-				       useSymmetricBeam);
+				       useSymmetricBeam));
     }
     break;
   case VLA_X:
@@ -1135,13 +1118,13 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
       // This is based on the OLD X feed position; upgrade in progress
       Float mag = 1.21;  // half-squint magnitude in arcmin at 1 GHz)
       Float ang = 82.0*C::pi/180.0;    // squint orientation, rads, North of +AZ axis
-      pb_pointer_p = new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"),
+      pb_pointer_p.reset(new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"),
 				       Quantity(0.8564,"deg"), Quantity(1.0,"GHz"),
 				       BeamSquint(MDirection(Quantity((mag*cos(ang)), "'"),
 							     Quantity((mag*sin(ang)), "'"),
 							     MDirection::Ref(MDirection::AZEL)),
 						  Quantity(1.0, "GHz")),
-				       useSymmetricBeam);
+				       useSymmetricBeam));
 
     }
   break;
@@ -1149,13 +1132,13 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
     {
       Float mag = 1.21;  // half-squint magnitude in arcmin at 1 GHz)
       Float ang = -25.0*C::pi/180.0;    // squint orientation, rads, North of +AZ axis
-      pb_pointer_p = new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"),
+      pb_pointer_p.reset(new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"),
 				       Quantity(0.8564,"deg"), Quantity(1.0,"GHz"),
 				       BeamSquint(MDirection(Quantity((mag*cos(ang)), "'"),
 							     Quantity((mag*sin(ang)), "'"),
 							     MDirection::Ref(MDirection::AZEL)),
 						  Quantity(1.0, "GHz")),
-				       useSymmetricBeam);
+				       useSymmetricBeam));
     }
   break;
   case VLA_K:
@@ -1163,13 +1146,13 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
       // This is based on the OLD K feed position; upgrade in progress
       Float mag = 1.21;  // half-squint magnitude in arcmin at 1 GHz)
       Float ang = -6.0*C::pi/180.0;    // squint orientation, rads, North of +AZ axis
-      pb_pointer_p = new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"),
+      pb_pointer_p.reset(new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"),
 				       Quantity(0.8564,"deg"), Quantity(1.0,"GHz"),
 				       BeamSquint(MDirection(Quantity((mag*cos(ang)), "'"),
 							     Quantity((mag*sin(ang)), "'"),
 							     MDirection::Ref(MDirection::AZEL)),
 						  Quantity(1.0, "GHz")),
-				       useSymmetricBeam);
+				       useSymmetricBeam));
     }
   break;
   case VLA_Q:
@@ -1177,27 +1160,27 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
       // This is based on an approximate feed position; awaiting new numbers
       Float mag = 1.21;  // half-squint magnitude in arcmin at 1 GHz)
       Float ang = 0.0*C::pi/180.0;    // squint orientation, rads, North of +AZ axis
-      pb_pointer_p = new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"),
+      pb_pointer_p.reset(new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"),
 				       Quantity(0.8564,"deg"), Quantity(1.0,"GHz"),
 				       BeamSquint(MDirection(Quantity((mag*cos(ang)), "'"),
 							     Quantity((mag*sin(ang)), "'"),
 							     MDirection::Ref(MDirection::AZEL)),
 						  Quantity(1.0, "GHz")),
-				       useSymmetricBeam);
+				       useSymmetricBeam));
     }
   break;
   case VLA_P:
     {
       // This is not based on any P band measurements; assume no squint
-      pb_pointer_p = new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"),
-				       Quantity(0.8564,"deg"), Quantity(1.0,"GHz"));
+      //pb_pointer_p = new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"), Quantity(0.8564,"deg"), Quantity(1.0,"GHz"));
+      pb_pointer_p.reset(new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"), Quantity(0.8564,"deg"), Quantity(1.0,"GHz")));
     }
   break;
   case VLA_4:
     {
       // This is not based on any 4 band measurements; assume no squint
-      pb_pointer_p = new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"),
-				       Quantity(0.8564,"deg"), Quantity(1.0,"GHz"));
+      //pb_pointer_p = new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"), Quantity(0.8564,"deg"), Quantity(1.0,"GHz"));
+      pb_pointer_p.reset(new PBMath1DAiry( Quantity(25.0,"m"), Quantity(2.36,"m"), Quantity(0.8564,"deg"), Quantity(1.0,"GHz")));
     }
   break;
 
@@ -1211,8 +1194,7 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
   case OVRO:
     {
       Double scalesize = 1.1998662 * 25.0/10.4;
-      pb_pointer_p = new PBMath1DNumeric(vlanum, Quantity(scalesize,"'"), 
-					 Quantity(43.0,"GHz"), False);
+      pb_pointer_p.reset(new PBMath1DNumeric(vlanum, Quantity(scalesize,"'"), Quantity(43.0,"GHz"), False));
     }
     break;
   case GBT:
@@ -1245,29 +1227,25 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
       }
       
          
-      pb_pointer_p = new PBMath1DPoly( coeff, Quantity(scalesize,"'"), 
-				       Quantity(1.0e9,"Hz"),False);
+      pb_pointer_p.reset(new PBMath1DPoly( coeff, Quantity(scalesize,"'"), Quantity(1.0e9,"Hz"),False));
     }
     break;
   case GMRT:
     {
       Double scalesize = 1.1998662 * 25.0/45.0;
-      pb_pointer_p = new PBMath1DNumeric(vlanum, Quantity(scalesize,"'"), 
-					 Quantity(43.0,"GHz"), False);
+      pb_pointer_p.reset(new PBMath1DNumeric(vlanum, Quantity(scalesize,"'"), Quantity(43.0,"GHz"), False));
     }
     break;
   case NRAO12M:
     {
       Double scalesize = 1.1998662 * 25.0/12.0;
-      pb_pointer_p = new PBMath1DNumeric(vlanum, Quantity(scalesize,"'"), 
-					 Quantity(43.0,"GHz"), False);
+      pb_pointer_p.reset(new PBMath1DNumeric(vlanum, Quantity(scalesize,"'"), Quantity(43.0,"GHz"), False));
     }
     break;
   case NRAO140FT:
     {
       Double scalesize = 1.1998662 * 25.0/43.0;
-      pb_pointer_p = new PBMath1DNumeric(vlanum, Quantity(scalesize,"'"), 
-					 Quantity(43.0,"GHz"), False);
+      pb_pointer_p.reset(new PBMath1DNumeric(vlanum, Quantity(scalesize,"'"), Quantity(43.0,"GHz"), False));
     }
     break;
 
@@ -1289,9 +1267,7 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
       cosScale(3)= 0.01891;
       // 0.01891 = 0.0672 * 1000(MHz/GHz) /(60(arcm/deg)) * 2pi/180
 
-      pb_pointer_p = new PBMath1DCosPoly(coef, cosScale, 
-					 Quantity(1.0, "deg"), 
-					 Quantity(1.0, "GHz"), thisIsVP);
+      pb_pointer_p.reset(new PBMath1DCosPoly(coef, cosScale, Quantity(1.0, "deg"), Quantity(1.0, "GHz"), thisIsVP));
     }
   break;
   case WSRT_LOW:
@@ -1310,8 +1286,8 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
       cosScale(3)= 0.01830;
       // 0.01830 = 0.065 * 1000(MHz/GHz) /(60(arcm/deg)) * 2pi/180
 
-      pb_pointer_p = new PBMath1DCosPoly(coef, cosScale, Quantity(1.0, "deg"), 
-					 Quantity(1.0, "GHz"), thisIsVP);
+      //pb_pointer_p = new PBMath1DCosPoly(coef, cosScale, Quantity(1.0, "deg"), Quantity(1.0, "GHz"), thisIsVP);
+      pb_pointer_p.reset(new PBMath1DCosPoly(coef, cosScale, Quantity(1.0, "deg"), Quantity(1.0, "GHz"), thisIsVP));
     }
     break;
   case ATCA_L1:    
@@ -1323,7 +1299,7 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
       coef(3)= -2.23e-9;
       coef(4)= 1.56e-12;
 
-      pb_pointer_p = new PBMath1DIPoly( coef, Quantity(53.0,"'"), Quantity(1.0,"GHz"));
+      pb_pointer_p.reset(new PBMath1DIPoly( coef, Quantity(53.0,"'"), Quantity(1.0,"GHz")));
     }
     break;
   case ATCA_L2:
@@ -1337,7 +1313,7 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
       coef(5)= -7.5132629268134E-19;
       coef(6)= 1.9083641820123E-23;
 
-      pb_pointer_p = new PBMath1DPoly( coef, Quantity(53.0,"'"), Quantity(1.0,"GHz"));
+      pb_pointer_p.reset(new PBMath1DPoly( coef, Quantity(53.0,"'"), Quantity(1.0,"GHz")));
     }
     break;
   case ATCA_L3:
@@ -1352,13 +1328,13 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
       coef(3)= -3.68e-10;
       coef(4)= 4.88e-13;
 
-      pb_pointer_p = new PBMath1DIPoly( coef, Quantity(53.0,"'"), Quantity(1.0,"GHz"),
+      pb_pointer_p.reset(new PBMath1DIPoly( coef, Quantity(53.0,"'"), Quantity(1.0,"GHz"),
 					False,
 					BeamSquint(MDirection(Quantity(0.0, "'"),
 							      Quantity(0.0, "'"),
 							      MDirection::Ref(MDirection::AZEL)),
 						   Quantity(1.0, "GHz")),
-					False);
+					False));
     }
     break;
   case ATCA_C:
@@ -1370,13 +1346,13 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
       coef(3)= -1.17e-9;
       coef(4)= 1.07e-12;
 
-      pb_pointer_p = new PBMath1DIPoly( coef, Quantity(53.0,"'"), Quantity(1.0,"GHz"),
+      pb_pointer_p.reset(new PBMath1DIPoly( coef, Quantity(53.0,"'"), Quantity(1.0,"GHz"),
 					False,
 					BeamSquint(MDirection(Quantity(0.0, "'"),
 							      Quantity(0.0, "'"),
 							      MDirection::Ref(MDirection::AZEL)),
 						   Quantity(1.0, "GHz")),
-					False);
+					False));
     }
     break;
   case ATCA_X:
@@ -1388,17 +1364,17 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
       coef(3)= -4.68e-10;
       coef(4)= 5.50e-13;
 
-      pb_pointer_p = new PBMath1DIPoly( coef, Quantity(53.0,"'"), Quantity(1.0,"GHz"),
+      pb_pointer_p.reset(new PBMath1DIPoly( coef, Quantity(53.0,"'"), Quantity(1.0,"GHz"),
 					False,
 					BeamSquint(MDirection(Quantity(0.0, "'"),
 							      Quantity(0.0, "'"),
 							      MDirection::Ref(MDirection::AZEL)),
 						   Quantity(1.0, "GHz")),
-				        False);
+				        False));
      }
     break;
   case HATCREEK:
-    pb_pointer_p = new PBMath1DGauss( Quantity((191.67/2.0),"'"),  // half width==> /2
+    pb_pointer_p.reset(new PBMath1DGauss( Quantity((191.67/2.0),"'"),  // half width==> /2
 				      Quantity(215.0, "'"),
 				      Quantity(1.0, "GHz"),
 				      False,
@@ -1406,27 +1382,22 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
 							    Quantity(0.0, "'"),
 							    MDirection::Ref(MDirection::AZEL)),
 						 Quantity(1.0, "GHz")),
-				      False );
+				      False ));
     break;
   case IRAMPDB:
-      pb_pointer_p = new PBMath1DAiry( Quantity(15.0,"m"), Quantity(1.0,"m"),
-				       Quantity(1.784,"deg"), Quantity(1.0,"GHz") );
+      pb_pointer_p.reset(new PBMath1DAiry( Quantity(15.0,"m"), Quantity(1.0,"m"), Quantity(1.784,"deg"), Quantity(1.0,"GHz")) );
     break;
   case IRAM30M:
-      pb_pointer_p = new PBMath1DAiry( Quantity(15.0,"m"), Quantity(1.0,"m"),
-				       Quantity(1.784,"deg"), Quantity(1.0,"GHz") );
+      pb_pointer_p.reset(new PBMath1DAiry( Quantity(15.0,"m"), Quantity(1.0,"m"), Quantity(1.784,"deg"), Quantity(1.0,"GHz") ));
     break;
   case ALMA:
-      pb_pointer_p = new PBMath1DAiry( Quantity(12.0,"m"), Quantity(1.0,"m"),
-				       Quantity(1.784,"deg"), Quantity(1.0,"GHz") );
+      pb_pointer_p.reset(new PBMath1DAiry( Quantity(12.0,"m"), Quantity(1.0,"m"), Quantity(1.784,"deg"), Quantity(1.0,"GHz") ));
     break;
   case ALMASD:
-      pb_pointer_p = new PBMath1DAiry( Quantity(12.0,"m"), Quantity(1.0,"m"),
-				       Quantity(1.784,"deg"), Quantity(1.0,"GHz") );
+      pb_pointer_p.reset(new PBMath1DAiry( Quantity(12.0,"m"), Quantity(1.0,"m"), Quantity(1.784,"deg"), Quantity(1.0,"GHz") ));
     break;
   case ACA:
-      pb_pointer_p = new PBMath1DAiry( Quantity(6.0,"m"), Quantity(0.5,"m"),
-				       Quantity(3.568,"deg"), Quantity(1.0,"GHz") );
+      pb_pointer_p.reset(new PBMath1DAiry( Quantity(6.0,"m"), Quantity(0.5,"m"), Quantity(3.568,"deg"), Quantity(1.0,"GHz") ));
     break;
   case SMA:
     {
@@ -1457,13 +1428,14 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
     Quantity fulrad((52.3/2.0*3.0/1.1117),"arcsec");
     Quantity lefreq(224.0, "GHz");
     
-    pb_pointer_p = new PBMath1DNumeric(valsph,fulrad,lefreq);
+    //pb_pointer_p = new PBMath1DNumeric(valsph,fulrad,lefreq);
+    pb_pointer_p.reset(new PBMath1DNumeric(valsph,fulrad,lefreq));
     }
     break;
 
   case ATA:
-    pb_pointer_p = new PBMath1DAiry( Quantity(6.0,"m"), Quantity(0.5,"m"),
-				     Quantity(3.568,"deg"), Quantity(1.0,"GHz") );
+    pb_pointer_p.reset(new PBMath1DAiry( Quantity(6.0,"m"), Quantity(0.5,"m"), Quantity(3.568,"deg"), Quantity(1.0,"GHz")));
+//    pb_pointer_p = new PBMath1DAiry( Quantity(6.0,"m"), Quantity(0.5,"m"), Quantity(3.568,"deg"), Quantity(1.0,"GHz") );
     break;
     
   case NONE:
@@ -1471,13 +1443,20 @@ void PBMath::initByTelescope(PBMath::CommonPB myPBType,
       Vector<Double> coef(1);
       coef(0)= 1.0;
 
-      pb_pointer_p = new PBMath1DIPoly( coef, Quantity(180,"deg"), Quantity(1.0,"GHz"),
-					False,
-					BeamSquint(MDirection(Quantity(0.0, "'"),
-							      Quantity(0.0, "'"),
-							      MDirection::Ref(MDirection::AZEL)),
-						   Quantity(1.0, "GHz")),
-				        False);
+      //pb_pointer_p = new PBMath1DIPoly( coef, Quantity(180,"deg"), Quantity(1.0,"GHz"),
+	//				False,
+	//				BeamSquint(MDirection(Quantity(0.0, "'"),
+	//						      Quantity(0.0, "'"),
+	//						      MDirection::Ref(MDirection::AZEL)),
+	//					   Quantity(1.0, "GHz")),
+	//			        False);
+      pb_pointer_p.reset(new PBMath1DIPoly( coef, Quantity(180,"deg"), Quantity(1.0,"GHz"),
+                    False,
+                    BeamSquint(MDirection(Quantity(0.0, "'"),
+                                  Quantity(0.0, "'"),
+                                  MDirection::Ref(MDirection::AZEL)),
+                           Quantity(1.0, "GHz")),
+                        False));
      }
     break;
   default:

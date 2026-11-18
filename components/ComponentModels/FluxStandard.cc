@@ -43,7 +43,7 @@
 #include <casacore/casa/Logging/LogIO.h>
 #include <casacore/casa/OS/File.h>
 #include <casacore/casa/OS/Path.h>
-#include <casacore/casa/Utilities/CountedPtr.h>
+//#include <casacore/casa/Utilities/CountedPtr.h>
 #include <casacore/casa/sstream.h>
 #include <casacore/casa/iomanip.h>
 #include <casacore/measures/Measures/MDirection.h>
@@ -239,17 +239,17 @@ Bool FluxStandard::compute(const String& sourceName,
   CountedPtr<FluxCalcVQS> fluxStdPtr;
   Bool timeVariable(false);
   if(itsFluxScale == BAARS)
-    fluxStdPtr = new NSTDS::FluxStdBaars;
+    fluxStdPtr.reset(new NSTDS::FluxStdBaars);
   else if(itsFluxScale == PERLEY_90)
-    fluxStdPtr = new NSTDS::FluxStdPerley90;
+    fluxStdPtr.reset(new NSTDS::FluxStdPerley90);
   else if(itsFluxScale == PERLEY_TAYLOR_95)
-    fluxStdPtr = new NSTDS::FluxStdPerleyTaylor95;
+    fluxStdPtr.reset(new NSTDS::FluxStdPerleyTaylor95);
   else if(itsFluxScale == PERLEY_TAYLOR_99)
-    fluxStdPtr = new NSTDS::FluxStdPerleyTaylor99;
+    fluxStdPtr.reset(new NSTDS::FluxStdPerleyTaylor99);
   else if(itsFluxScale == PERLEY_BUTLER_2010)
-    fluxStdPtr = new NSTDS::FluxStdPerleyButler2010;
+    fluxStdPtr.reset(new NSTDS::FluxStdPerleyButler2010);
   else if(itsFluxScale == PERLEY_BUTLER_2013) {
-    fluxStdPtr = new NSTDS::FluxStdPerleyButler2013;
+    fluxStdPtr.reset(new NSTDS::FluxStdPerleyButler2013);
     timeVariable=true; // to read from the table 
     if (interpmethod_p=="") {
       ostringstream oss;
@@ -258,7 +258,7 @@ Bool FluxStandard::compute(const String& sourceName,
     }
   }
   else if(itsFluxScale == SCAIFE_HEALD_2012)
-    fluxStdPtr = new NSTDS::FluxStdScaifeHeald2012;
+    fluxStdPtr.reset(new NSTDS::FluxStdScaifeHeald2012);
   else{
     if(verbose)
       os << LogIO::SEVERE

@@ -208,7 +208,8 @@ Vector<Double> SkyComponent::toPixel (const Unit& brightnessUnitIn,
 
 
 Bool SkyComponent::ok() const {
-  if (itsCompPtr.null()) {
+  //if (itsCompPtr.null()) {
+  if (!itsCompPtr) {
     LogIO logErr(LogOrigin("SkyComponent", "ok()"));
     logErr << LogIO::SEVERE << "Internal pointer is not pointing to anything"
            << LogIO::POST;

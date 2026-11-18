@@ -58,6 +58,9 @@
 #include <casacore/images/Images/ImageInterface.h>
 #include <casacore/coordinates/Coordinates/DirectionCoordinate.h>
 
+template<typename... Args>
+using CountedPtr = std::shared_ptr<Args...>;
+
 namespace casacore { //# NAMESPACE CASACORE - BEGIN
   
   // <summary>  An FTMachine for Gridded Fourier transforms including effects of primary beam and pointing offsets and the w-term</summary>
@@ -169,7 +172,7 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
     ~AWProjectFT() CASAREST_NOEXCEPT;
     
     //   void setEPJones(EPJones* ep_j) {epJ = ep_j;}
-    void setEPJones(SolvableVisJones* ep_j) {epJ_p = ep_j;}
+    void setEPJones(SolvableVisJones* ep_j) {epJ_p.reset(ep_j);}
     
     void setDOPBCorrection(Bool doit=True) {doPBCorrection=doit;};
     // Initialize transform to Visibility plane using the image

@@ -117,7 +117,8 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
     MS::PredefinedColumns whichCol=MS::DATA;
     if(thisms.tableDesc().isColumn("CORRECTED_DATA"))
       whichCol=MS::CORRECTED_DATA;
-    CountedPtr<MeasurementSet> subMS(splitter.makeMemSubMS(whichCol), True);
+    //CountedPtr<MeasurementSet> subMS(splitter.makeMemSubMS(whichCol), True);
+    CountedPtr<MeasurementSet> subMS(splitter.makeMemSubMS(whichCol));
     return setDataOnThisMS(*subMS);
 
   }
@@ -209,10 +210,13 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
     //Will need to rethink this when in parallel mode with multi-cpu access
     blockMSSel_p[numMS_p-1]=thisms;
     //breaking reference
-    if(ms_p.null())
-      ms_p=new MeasurementSet();
-    else
+    //if(ms_p.null())
+    if(!ms_p) {
+      //ms_p=new MeasurementSet();
+      ms_p.reset(new MeasurementSet());
+    } else {
       (*ms_p)=MeasurementSet();
+    }
     (*ms_p)=thisms;
     
     
@@ -450,13 +454,16 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 
       // Now remake the selected ms
       if(!(exprNode.isNull())){
-	mssel_p = new MeasurementSet(thisms(exprNode));
+	//mssel_p = new MeasurementSet(thisms(exprNode));
+	mssel_p.reset(new MeasurementSet(thisms(exprNode)));
       }
       else{
 	// Null take all the ms ...setdata() blank means that
-	mssel_p = new MeasurementSet(thisms);
+	//mssel_p = new MeasurementSet(thisms);
+	mssel_p.reset(new MeasurementSet(thisms));
       } 
-      AlwaysAssert(!mssel_p.null(), AipsError);
+      //AlwaysAssert(!mssel_p.null(), AipsError);
+      AlwaysAssert(mssel_p, AipsError);
       if(mssel_p->nrow()==0) {
 	//delete mssel_p; 
 	mssel_p=0;
@@ -467,7 +474,8 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 	blockStart_p.resize(numMS_p, True);
 	blockStep_p.resize(numMS_p, True);
 	blockSpw_p.resize(numMS_p, True);
-	mssel_p=new MeasurementSet(thisms);	
+	//mssel_p=new MeasurementSet(thisms);	
+	mssel_p.reset(new MeasurementSet(thisms));	
 	os << "Selection is empty: you may want to review this MSs selection"
 	   << LogIO::EXCEPTION;
       }
@@ -755,7 +763,8 @@ Bool ImagerMultiMS::setimage(const Int nx, const Int ny,
 			 TableLock());
     
       if(ms_p->isWritable()){
-	hist_p= new MSHistoryHandler(*ms_p, "imager");
+	//hist_p= new MSHistoryHandler(*ms_p, "imager");
+	hist_p.reset(new MSHistoryHandler(*ms_p, "imager"));
       }
     }
     

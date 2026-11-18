@@ -46,6 +46,9 @@
 #include <synthesis/MeasurementComponents/CFDefs.h>
 #include <synthesis/MeasurementComponents/Utils.h>
 
+template<typename... Args>
+using CountedPtr = std::shared_ptr<Args...>;
+
 namespace casacore { //# NAMESPACE CASACORE - BEGIN
   using namespace CFDefs;
   // <summary> 
@@ -218,7 +221,8 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
     void flush(ImageInterface<Float>& avgPB, String qualifier=String(""));
     Int loadAvgPB(ImageInterface<Float>& avgPB, String qualifier=String(""));
     Int loadAvgPB(CountedPtr<ImageInterface<Float> > & avgPB, String qualifier=String(""))
-    {if (avgPB.null()) avgPB = new TempImage<Float>(); return loadAvgPB(*avgPB,qualifier);};
+    {if (!avgPB) avgPB.reset(new TempImage<Float>()); return loadAvgPB(*avgPB,qualifier);};
+    //{if (avgPB.null()) avgPB = new TempImage<Float>(); return loadAvgPB(*avgPB,qualifier);};
 
     Bool avgPBReady(const String& qualifier=String("")) 
     {return (avgPBReady_p && (avgPBReadyQualifier_p == qualifier));};

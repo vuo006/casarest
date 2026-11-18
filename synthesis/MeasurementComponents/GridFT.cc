@@ -302,7 +302,8 @@ void GridFT::initializeToVis(ImageInterface<Complex>& iimage,
   // If we are memory-based then read the image in and create an
   // ArrayLattice otherwise just use the PagedImage
   if(isTiled) {
-    lattice=CountedPtr<Lattice<Complex> >(image, False);
+    //lattice=CountedPtr<Lattice<Complex> >(image, False);
+    lattice.reset(image, [](void*){});
   }
   else {
      IPosition gridShape(4, nx, ny, npol, nchan);
@@ -321,7 +322,8 @@ void GridFT::initializeToVis(ImageInterface<Complex>& iimage,
      griddedData(blc, trc) = image->getSlice(start, image->shape());
 
      //if(arrayLattice) delete arrayLattice; arrayLattice=0;
-     arrayLattice = new ArrayLattice<Complex>(griddedData);
+     //arrayLattice = new ArrayLattice<Complex>(griddedData);
+     arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
      lattice=arrayLattice;
   }
 
@@ -398,7 +400,8 @@ void GridFT::initializeToSky(ImageInterface<Complex>& iimage,
   if(isTiled) {
     imageCache->flush();
     image->set(Complex(0.0));
-    lattice=CountedPtr<Lattice<Complex> >(image, False);
+    //lattice=CountedPtr<Lattice<Complex> >(image, False);
+    lattice.reset(image, [](void*){});
   }
   else {
     IPosition gridShape(4, nx, ny, npol, nchan);
@@ -410,7 +413,8 @@ void GridFT::initializeToSky(ImageInterface<Complex>& iimage,
     }
     //iimage.get(griddedData, False);
     //if(arrayLattice) delete arrayLattice; arrayLattice=0;
-    arrayLattice = new ArrayLattice<Complex>(griddedData);
+    //arrayLattice = new ArrayLattice<Complex>(griddedData);
+    arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
     lattice=arrayLattice;
   }
   //AlwaysAssert(lattice, AipsError);
@@ -1103,7 +1107,8 @@ Bool GridFT::fromRecord(String& error, const RecordInterface& inRec)
     init(); 
 
     if(isTiled) {
-      lattice=CountedPtr<Lattice<Complex> >(image, False);
+      //lattice=CountedPtr<Lattice<Complex> >(image, False);
+      lattice.reset(image, [](void*){});
     }
     else {
       // Make the grid the correct shape and turn it into an array lattice
@@ -1118,7 +1123,8 @@ Bool GridFT::fromRecord(String& error, const RecordInterface& inRec)
       griddedData(blc, trc)=image->getSlice(start, image->shape());
       
       //if(arrayLattice) delete arrayLattice; arrayLattice=0;
-      arrayLattice = new ArrayLattice<Complex>(griddedData);
+      //arrayLattice = new ArrayLattice<Complex>(griddedData);
+      arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
       lattice=arrayLattice;
     }
 

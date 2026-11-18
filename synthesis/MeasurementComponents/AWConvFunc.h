@@ -39,6 +39,9 @@
 #include <casacore/casa/Logging/LogOrigin.h>
 #include <casacore/casa/Arrays/ArrayFwd.h>
 
+template <typename... Args>
+using CountedPtr = std::shared_ptr<Args...>;
+
 namespace casacore { //# NAMESPACE CASACORE - BEGIN
   template<class T> class ImageInterface;
   class VisBuffer;

@@ -33,7 +33,12 @@
 #include <casacore/casa/Arrays/Vector.h>
 #include <casacore/casa/Containers/RecordInterface.h>
 ///#include <casacore/casa/Utilities/CountedPtr.h>
-#include <casacore/casa/Utilities/CountedPtr.h>
+//#include <casacore/casa/Utilities/CountedPtr.h>
+
+#include <memory>
+
+template <typename... Args>
+using CountedPtr = std::shared_ptr<Args...>;
 
 namespace casacore { //# NAMESPACE CASACORE - BEGIN
 

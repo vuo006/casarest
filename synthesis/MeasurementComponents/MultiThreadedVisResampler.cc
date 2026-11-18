@@ -152,11 +152,14 @@ namespace casacore{
     //
     // Fill the various containers (allocate buffers)
     //----------------------------------------------------------------
-    if (threadClerk_p.null()) threadClerk_p = new ThreadCoordinator<Int>(nelements());
+    //if (threadClerk_p.null()) threadClerk_p = new ThreadCoordinator<Int>(nelements());
+    if (!threadClerk_p) threadClerk_p.reset(new ThreadCoordinator<Int>(nelements()));
     for (Int i=0;i<nelements();i++)
       {
-	resamplers_p[i] = visResamplerCtor_p->clone();
-	gridderWorklets_p[i] = new ResamplerWorklet();
+	//resamplers_p[i] = visResamplerCtor_p->clone();
+	resamplers_p[i].reset(visResamplerCtor_p->clone());
+	//gridderWorklets_p[i] = new ResamplerWorklet();
+	gridderWorklets_p[i].reset(new ResamplerWorklet());
       }
   }
   //
@@ -172,9 +175,13 @@ namespace casacore{
 	// *(for gridding) and accumulating sum-of-weights (also
 	// *during gridding).  These may or may not be shared.
 	//
-	if (doublePrecision_p) doubleGriddedData_p[i] = new Array<DComplex>;
-	else                   singleGriddedData_p[i] = new Array<Complex>;
-	sumwt_p[i] = new Matrix<Double>;
+	//if (doublePrecision_p) doubleGriddedData_p[i] = new Array<DComplex>;
+	//else                   singleGriddedData_p[i] = new Array<Complex>;
+	if (doublePrecision_p) doubleGriddedData_p[i].reset(new Array<DComplex>{});
+	else                   singleGriddedData_p[i].reset(new Array<Complex>{});
+
+	//sumwt_p[i] = new Matrix<Double>;
+	sumwt_p[i].reset(new Matrix<Double>{});
 	if (!threadStarted_p)
 	  {
 	    if (doublePrecision_p) totalMem += (*doubleGriddedData_p[i]).size()*sizeof(DComplex);
@@ -210,7 +217,8 @@ namespace casacore{
     Double totalMem=0;
     //    if (nelements() > 1)
       {
-	if (visResamplerCtor_p.null())
+	//if (visResamplerCtor_p.null())
+	if (!visResamplerCtor_p)
 	  log_p << "Internal Error: VisResampler Ctor not initialized" << LogIO::EXCEPTION;
 
 	log_p << "Allocating buffers per thread.  No. of threads = " << nelements() << endl;

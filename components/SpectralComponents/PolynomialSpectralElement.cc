@@ -32,6 +32,7 @@
 
 #include <casacore/casa/iostream.h>
 
+using namespace std;
 namespace casacore { //# NAMESPACE CASACORE - BEGIN
 
 PolynomialSpectralElement::PolynomialSpectralElement()

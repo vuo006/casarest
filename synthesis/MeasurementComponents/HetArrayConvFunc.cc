@@ -121,9 +121,8 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 	      
 	      //VLA ratio of blockage to dish
 	      Quantity blockDiam(dishDiam(k)/25.0*2.0, "m");	      
-	      antMath_p[diamIndex]=new PBMath1DAiry(qdiam, blockDiam,  
-						    Quantity(150,"arcsec"), 
-						    Quantity(100.0,"GHz"));
+	      //antMath_p[diamIndex]=new PBMath1DAiry(qdiam, blockDiam,  Quantity(150,"arcsec"), Quantity(100.0,"GHz"));
+	      antMath_p[diamIndex].reset(new PBMath1DAiry(qdiam, blockDiam,  Quantity(150,"arcsec"), Quantity(100.0,"GHz")));
 	      
 	      
 	    }
@@ -343,13 +342,17 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 
     convFunctions_p.resize(actualConvIndex_p+1);
     convWeights_p.resize(actualConvIndex_p+1);
-    convFunctions_p[actualConvIndex_p]= new Cube<Complex>();
-    convWeights_p[actualConvIndex_p]= new Cube<Complex>();
+    //convFunctions_p[actualConvIndex_p]= new Cube<Complex>();
+    convFunctions_p[actualConvIndex_p].reset(new Cube<Complex>());
+    //convWeights_p[actualConvIndex_p]= new Cube<Complex>();
+    convWeights_p[actualConvIndex_p].reset(new Cube<Complex>());
     convSupportBlock_p.resize(actualConvIndex_p+1);
     convSizes_p.resize(actualConvIndex_p+1);
-    convSupportBlock_p[actualConvIndex_p]=new Vector<Int>(ndishpair);
+    //convSupportBlock_p[actualConvIndex_p]=new Vector<Int>(ndishpair);
+    convSupportBlock_p[actualConvIndex_p].reset(new Vector<Int>(ndishpair));
     (*convSupportBlock_p[actualConvIndex_p])=convSupport_p;
-    convSizes_p[actualConvIndex_p]=new Vector<Int> (ndishpair);
+    //convSizes_p[actualConvIndex_p]=new Vector<Int> (ndishpair);
+    convSizes_p[actualConvIndex_p].reset(new Vector<Int> (ndishpair));
     
     convFunctions_p[actualConvIndex_p]->resize(convSize_p, convSize_p, ndishpair);
     *(convFunctions_p[actualConvIndex_p])=convSave_p; 

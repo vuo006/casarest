@@ -34,8 +34,11 @@
 #include <casacore/scimath/Mathematics/NumericTraits.h>
 #include <casacore/measures/Measures/Stokes.h>
 #include <casacore/casa/Quanta/Unit.h>
-#include <casacore/casa/Utilities/CountedPtr.h>
+//#include <casacore/casa/Utilities/CountedPtr.h>
 #include <components/ComponentModels/ComponentType.h>
+
+template <typename... Args>
+using CountedPtr = std::shared_ptr<Args...>;
 
 namespace casacore { //# NAMESPACE CASACORE - BEGIN
 

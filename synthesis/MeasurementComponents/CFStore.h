@@ -33,9 +33,13 @@
 #include <casacore/casa/Logging/LogIO.h>
 #include <casacore/casa/Logging/LogSink.h>
 #include <casacore/casa/Logging/LogOrigin.h>
-#include <casacore/casa/Utilities/CountedPtr.h>
+//#include <casacore/casa/Utilities/CountedPtr.h>
 #include <casacore/images/Images/ImageInterface.h>
 #include <msvis/MSVis/VisBuffer.h>
+
+template<typename... Args>
+using CountedPtr = std::shared_ptr<Args...>;
+
 namespace casacore { //# NAMESPACE CASACORE - BEGIN
   using namespace CFDefs;
   class CFStore
@@ -52,13 +56,14 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
       data(),rdata(), coordSys(cs), sampling(samp),
       xSupport(xsup), ySupport(ysup), maxXSupport(maxXSup),
       maxYSupport(maxYSup), pa(PA), mosPointingPos(mosPointing)
-    {data = new CFType(*dataPtr);};
+    {data.reset(new CFType(*dataPtr));};
 
     ~CFStore() {};
 
     CFStore& operator=(const CFStore& other);
     void show(const char *Mesg=NULL,ostream &os=cerr);
-    Bool null() {return data.null();};
+    //Bool null() {return data.null();};
+    Bool null() {return (data ? false : true);}
     void set(const CFStore& other)
     {
       coordSys = other.coordSys; sampling.assign(other.sampling); 
@@ -70,7 +75,8 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 	     Vector<Int>& xsup, Vector<Int>& ysup, Int maxXSup, Int maxYSup,
 	     Quantity PA, const Int mosPointing=0)
     {
-      data=dataPtr; coordSys=cs; sampling.assign(samp); 
+      //data=dataPtr; coordSys=cs; sampling.assign(samp); 
+      data.reset(new CFType(*dataPtr)); coordSys=cs; sampling.assign(samp); 
       xSupport.assign(xsup); ySupport.assign(ysup);
       maxXSupport=maxXSup;maxYSupport=maxYSup;
       pa=PA;

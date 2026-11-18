@@ -48,12 +48,15 @@
 #include <casacore/measures/Measures/MPosition.h>
 #include <casacore/coordinates/Coordinates/DirectionCoordinate.h>
 
+template<typename... Args>
+using CountedPtr = std::shared_ptr<Args...>;
+
 namespace casacore { //# NAMESPACE CASACORE - BEGIN
 
 
 template <class K, class V> class SimpleOrderedMap;
-template <class T> class PtrBlock;
-template <class T> class CountedPtr;
+//template <class T> class PtrBlock;
+//template <class T> class CountedPtr;
 class   WPConvFunc; 
 
 // <summary>  An FTMachine for Gridded Fourier transforms </summary>

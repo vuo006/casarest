@@ -33,6 +33,9 @@
 #include <components/ComponentModels/Flux.h>
 #include <casacore/measures/Measures/MDirection.h>
 
+template <typename... Args>
+using CountedPtr = std::shared_ptr<Args...>;
+
 namespace casacore { //# NAMESPACE CASACORE - BEGIN
 
 // Forward declarations

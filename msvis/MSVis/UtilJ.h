@@ -22,6 +22,7 @@
 #include <vector>
 #include <algorithm>
 
+using namespace std;
 // The Assert macro is an alias to the standard assert macro when NDEBUG is defined.  When
 // NDEBUG is not defined (release build) then a throw is used to report the error.
 

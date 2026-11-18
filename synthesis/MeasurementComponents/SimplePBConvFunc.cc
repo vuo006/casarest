@@ -533,13 +533,17 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
       convSizes_p.resize(actualConvIndex_p+1);
       //Only one beam for now...but later this should be able to
       // take all the beams for the different antennas.
-      convSupportBlock_p[actualConvIndex_p]=new Vector<Int>(1);
-      convSizes_p[actualConvIndex_p]=new Vector<Int> (1);
+      //convSupportBlock_p[actualConvIndex_p]=new Vector<Int>(1);
+      //convSizes_p[actualConvIndex_p]=new Vector<Int> (1);
+      convSupportBlock_p[actualConvIndex_p].reset(new Vector<Int>(1));
+      convSizes_p[actualConvIndex_p].reset(new Vector<Int> (1));
       (*(convSupportBlock_p[actualConvIndex_p]))[0]=convSupport_p;
       convFunctions_p.resize(actualConvIndex_p+1);
       convWeights_p.resize(actualConvIndex_p+1);
-      convFunctions_p[actualConvIndex_p]= new Cube<Complex>();
-      convWeights_p[actualConvIndex_p]= new Cube<Complex>();
+      //convFunctions_p[actualConvIndex_p]= new Cube<Complex>();
+      //convWeights_p[actualConvIndex_p]= new Cube<Complex>();
+      convFunctions_p[actualConvIndex_p].reset(new Cube<Complex>());
+      convWeights_p[actualConvIndex_p].reset(new Cube<Complex>());
       Int newConvSize=2*(convSupport_p+2)*convSampling;
       //NEED to chop this right ...and in the centre
       if(newConvSize < convSize_p){
@@ -574,14 +578,18 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
     else{
       convSupportBlock_p.resize(actualConvIndex_p+1);
       convSizes_p.resize(actualConvIndex_p+1);
-      convSupportBlock_p[actualConvIndex_p]=new Vector<Int>(1);
-      convSizes_p[actualConvIndex_p]=new Vector<Int> (1);
+      //convSupportBlock_p[actualConvIndex_p]=new Vector<Int>(1);
+      //convSizes_p[actualConvIndex_p]=new Vector<Int> (1);
+      convSupportBlock_p[actualConvIndex_p].reset(new Vector<Int>(1));
+      convSizes_p[actualConvIndex_p].reset(new Vector<Int> (1));
       (*(convSupportBlock_p[actualConvIndex_p]))[0]=convSupport_p;
       (*convSizes_p[actualConvIndex_p])[0]=convSize_p;
       convFunctions_p.resize(actualConvIndex_p+1);
       convWeights_p.resize(actualConvIndex_p+1);
-      convFunctions_p[actualConvIndex_p]= new Cube<Complex>();
-      convWeights_p[actualConvIndex_p]= new Cube<Complex>();
+      //convFunctions_p[actualConvIndex_p]= new Cube<Complex>();
+      //convWeights_p[actualConvIndex_p]= new Cube<Complex>();
+      convFunctions_p[actualConvIndex_p].reset(new Cube<Complex>());
+      convWeights_p[actualConvIndex_p].reset(new Cube<Complex>());
       
       convFunctions_p[actualConvIndex_p]->resize(convSize_p, convSize_p,1);
       (convFunctions_p[actualConvIndex_p]->xyPlane(0))=convSave_p;

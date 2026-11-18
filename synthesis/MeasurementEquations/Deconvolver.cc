@@ -175,7 +175,8 @@ Deconvolver &Deconvolver::operator=(const Deconvolver &other)
   if (convolver_p && this != &other) {
     *convolver_p = *(other.convolver_p);
   }
-  if ((!cleaner_p.null()) && this != &other) {
+  //if ((!cleaner_p.null()) && this != &other) {
+  if (cleaner_p && this != &other) {
     *cleaner_p = *(other.cleaner_p);
   }
   return *this;
@@ -296,7 +297,8 @@ Bool Deconvolver::open(const String& dirty, const String& psf, Bool warn)
 	
 	os << "Making Image cleaner" << LogIO::POST;
 	//if (cleaner_p) delete cleaner_p;
-	cleaner_p= new ImageMSCleaner(*psf_p, *dirty_p);
+	//cleaner_p= new ImageMSCleaner(*psf_p, *dirty_p);
+	cleaner_p.reset(new ImageMSCleaner(*psf_p, *dirty_p));
 	if(nchan_p<=1){
 	  convolver_p = new LatticeConvolver<Float>(*psf_p);
 	}
@@ -321,7 +323,7 @@ Bool Deconvolver::open(const String& dirty, const String& psf, Bool warn)
 	  }
 	  
 	}
-	AlwaysAssert(!cleaner_p.null(), AipsError);
+	AlwaysAssert(cleaner_p, AipsError);
 	
 	return True;
 
@@ -1195,7 +1197,8 @@ Bool Deconvolver::clean(const String& algorithm, const Int niter,
 
     PagedImage<Float> modelImage(imagename);
 
-    AlwaysAssert(!cleaner_p.null(), AipsError);
+    //AlwaysAssert(!cleaner_p.null(), AipsError);
+    AlwaysAssert(cleaner_p, AipsError);
     PagedImage<Float> *maskim = 0;
     // Deal with mask
     if (mask != "") {
@@ -1838,7 +1841,8 @@ Bool Deconvolver::setscales(const String& scaleMethod,
 {
   LogIO os(LogOrigin("Deconvolver", "setscales()", WHERE));
 
-  AlwaysAssert(!cleaner_p.null(), AipsError);
+  //AlwaysAssert(!cleaner_p.null(), AipsError);
+  AlwaysAssert(cleaner_p, AipsError);
 
   Vector<Double> cells = psf_p->coordinates().increment();
   os << "Cell size = " << abs(cells(0)/C::arcsec) << LogIO::POST;

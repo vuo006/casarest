@@ -44,6 +44,7 @@
 #include <casacore/casa/sstream.h>
 
 using namespace casacore;
+using namespace std;
 
 IPosition handlePos (const IPosition& pos, const IPosition& def)
 {

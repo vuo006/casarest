@@ -32,6 +32,7 @@
 
 #define _ORIGIN  String("LogTransformedPolynomialSpectralElement::") + __FUNCTION__ + ":" + String::toString(__LINE__) + ": "
 
+using namespace std;
 
 namespace casacore { //# NAMESPACE CASACORE - BEGIN
 

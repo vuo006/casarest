@@ -34,7 +34,7 @@
 #include <casacore/casa/Arrays/MatrixMath.h>
 #include <casacore/casa/OS/HostInfo.h>
 #include <casacore/casa/System/ProgressMeter.h>
-#include <casacore/casa/Utilities/CountedPtr.h>
+//#include <casacore/casa/Utilities/CountedPtr.h>
 
 #include <casacore/coordinates/Coordinates/CoordinateSystem.h>
 #include <casacore/coordinates/Coordinates/DirectionCoordinate.h>
@@ -126,22 +126,29 @@ void CubeSkyEquation::init(FTMachine& ft){
   if(ft.name() == "MosaicFT"){
     ft_=new MosaicFT(static_cast<MosaicFT &>(ft));
     ift_=new MosaicFT(static_cast<MosaicFT &>(ft));
-    ftm_p[0]=ft_;
-    iftm_p[0]=ift_;
+    //ftm_p[0]=ft_;
+    //iftm_p[0]=ift_;
+    ftm_p[0].reset(ft_);
+    iftm_p[0].reset(ift_);
     //For mosaic ...outlier fields get normal GridFT's
     
     MPosition loc=ift_->getLocation();
     for (Int k=1; k < (nmod); ++k){ 
-      ftm_p[k]=new GridFT(1000000, 16, "SF", loc, 1.0, False);
-      iftm_p[k]=new GridFT(1000000, 16, "SF", loc, 1.0, False);
+      //ftm_p[k]=new GridFT(1000000, 16, "SF", loc, 1.0, False);
+      ftm_p[k].reset(new GridFT(1000000, 16, "SF", loc, 1.0, False));
+      //iftm_p[k]=new GridFT(1000000, 16, "SF", loc, 1.0, False);
+      iftm_p[k].reset(new GridFT(1000000, 16, "SF", loc, 1.0, False));
     }
   }
   else if(ft.name()== "WProjectFT"){
     ft_=new WProjectFT(static_cast<WProjectFT &>(ft));
     ift_=new WProjectFT(static_cast<WProjectFT &>(ft));
-    ftm_p[0]=ft_;
-    iftm_p[0]=ift_;
-    CountedPtr<WPConvFunc> sharedconvFunc= new WPConvFunc();
+    //ftm_p[0]=ft_;
+    //iftm_p[0]=ift_;
+    ftm_p[0].reset(ft_);
+    iftm_p[0].reset(ift_);
+    //CountedPtr<WPConvFunc> sharedconvFunc= new WPConvFunc();
+    CountedPtr<WPConvFunc> sharedconvFunc(new WPConvFunc());
     static_cast<WProjectFT &>(ft).setConvFunc(sharedconvFunc);
     static_cast<WProjectFT &>(*ftm_p[0]).setConvFunc(sharedconvFunc);
     static_cast<WProjectFT &>(*iftm_p[0]).setConvFunc(sharedconvFunc);
@@ -149,8 +156,10 @@ void CubeSkyEquation::init(FTMachine& ft){
     //but should be seperated between GridFT's for the outliers and 
     //WProject for the facets.
     for (Int k=1; k < (nmod); ++k){ 
-      ftm_p[k]=new WProjectFT(static_cast<WProjectFT &>(*ft_));
-      iftm_p[k]=new WProjectFT(static_cast<WProjectFT &>(*ift_));
+      //ftm_p[k]=new WProjectFT(static_cast<WProjectFT &>(*ft_));
+      ftm_p[k].reset(new WProjectFT(static_cast<WProjectFT &>(*ft_)));
+      //iftm_p[k]=new WProjectFT(static_cast<WProjectFT &>(*ift_));
+      iftm_p[k].reset(new WProjectFT(static_cast<WProjectFT &>(*ift_)));
       // Give each pair of FTMachine a convolution function set to share
       static_cast<WProjectFT &>(*ftm_p[k]).setConvFunc(sharedconvFunc);
       static_cast<WProjectFT &>(*iftm_p[k]).setConvFunc(sharedconvFunc);
@@ -160,8 +169,10 @@ void CubeSkyEquation::init(FTMachine& ft){
   else if(ft.name()== "GridBoth"){
     ft_=new GridBoth(static_cast<GridBoth &>(ft));
     ift_=new GridBoth(static_cast<GridBoth &>(ft));
-    ftm_p[0]=ft_;
-    iftm_p[0]=ift_;
+    //ftm_p[0]=ft_;
+    //iftm_p[0]=ift_;
+    ftm_p[0].reset(ft_);
+    iftm_p[0].reset(ift_);
     if(nmod > 1){
       throw(AipsError("No multifield with joint gridding allowed"));
     }
@@ -169,26 +180,34 @@ void CubeSkyEquation::init(FTMachine& ft){
   else if(ft.name()== "PBWProjectFT"){
      ft_=new nPBWProjectFT(static_cast<nPBWProjectFT &>(ft));
      ift_=new nPBWProjectFT(static_cast<nPBWProjectFT &>(ft));
-     ftm_p[0]=ft_;
-     iftm_p[0]=ift_;
+     //ftm_p[0]=ft_;
+     //iftm_p[0]=ift_;
+     ftm_p[0].reset(ft_);
+     iftm_p[0].reset(ift_);
      if(nmod != (2 * sm_->numberOfTaylorTerms() - 1)) /* MFS */
        throw(AipsError("No multifield with pb-projection allowed"));
      for (Int k=1; k < (nmod); ++k){ 
-      ftm_p[k]=new nPBWProjectFT(static_cast<nPBWProjectFT &>(*ft_));
-      iftm_p[k]=new nPBWProjectFT(static_cast<nPBWProjectFT &>(*ift_));
+      //ftm_p[k]=new nPBWProjectFT(static_cast<nPBWProjectFT &>(*ft_));
+      //iftm_p[k]=new nPBWProjectFT(static_cast<nPBWProjectFT &>(*ift_));
+      ftm_p[k].reset(new nPBWProjectFT(static_cast<nPBWProjectFT &>(*ft_)));
+      iftm_p[k].reset(new nPBWProjectFT(static_cast<nPBWProjectFT &>(*ift_)));
     }
   }
   else if(ft.name()== "AWProjectFT"){
      ft_=new AWProjectFT(static_cast<AWProjectFT &>(ft));
      ift_=new AWProjectFT(static_cast<AWProjectFT &>(ft));
      //     ift_=ft_;
-     ftm_p[0]=ft_;
-     iftm_p[0]=ift_;
+     //ftm_p[0]=ft_;
+     //iftm_p[0]=ift_;
+     ftm_p[0].reset(ft_);
+     iftm_p[0].reset(ift_);
      if(nmod != (2 * sm_->numberOfTaylorTerms() - 1)) /* MFS */
        throw(AipsError("No multifield with a-projection allowed"));
      for (Int k=1; k < (nmod); ++k){ 
-      ftm_p[k]=new AWProjectFT(static_cast<AWProjectFT &>(*ft_));
-      iftm_p[k]=new AWProjectFT(static_cast<AWProjectFT &>(*ift_));
+      //ftm_p[k]=new AWProjectFT(static_cast<AWProjectFT &>(*ft_));
+      //iftm_p[k]=new AWProjectFT(static_cast<AWProjectFT &>(*ift_));
+      ftm_p[k].reset(new AWProjectFT(static_cast<AWProjectFT &>(*ft_)));
+      iftm_p[k].reset(new AWProjectFT(static_cast<AWProjectFT &>(*ift_)));
       //      iftm_p[k]=ftm_p[k];
     }
   }
@@ -196,13 +215,17 @@ void CubeSkyEquation::init(FTMachine& ft){
      ft_=new AWProjectWBFT(static_cast<AWProjectWBFT &>(ft));
      ift_=new AWProjectWBFT(static_cast<AWProjectWBFT &>(ft));
      //     ift_=ft_;
-     ftm_p[0]=ft_;
-     iftm_p[0]=ift_;
+     //ftm_p[0]=ft_;
+     //iftm_p[0]=ift_;
+     ftm_p[0].reset(ft_);
+     iftm_p[0].reset(ift_);
      // if(nmod != (2 * sm_->numberOfTaylorTerms() - 1)) /* MFS */
      //   throw(AipsError("No multifield with a-projection allowed"));
      for (Int k=1; k < (nmod); ++k){ 
-      ftm_p[k]=new AWProjectWBFT(static_cast<AWProjectWBFT &>(*ft_));
-      iftm_p[k]=new AWProjectWBFT(static_cast<AWProjectWBFT &>(*ift_));
+      //ftm_p[k]=new AWProjectWBFT(static_cast<AWProjectWBFT &>(*ft_));
+      //iftm_p[k]=new AWProjectWBFT(static_cast<AWProjectWBFT &>(*ift_));
+      ftm_p[k].reset(new AWProjectWBFT(static_cast<AWProjectWBFT &>(*ft_)));
+      iftm_p[k].reset(new AWProjectWBFT(static_cast<AWProjectWBFT &>(*ift_)));
       if(sm_->numberOfTaylorTerms()>1) 
 	{
 	  for (Int model=0; model < (sm_->numberOfModels()) ; ++model)
@@ -219,34 +242,46 @@ void CubeSkyEquation::init(FTMachine& ft){
   else if(ft.name()== "PBMosaicFT"){
      ft_=new PBMosaicFT(static_cast<PBMosaicFT &>(ft));
      ift_=new PBMosaicFT(static_cast<PBMosaicFT &>(ft));
-     ftm_p[0]=ft_;
-     iftm_p[0]=ift_;
+     //ftm_p[0]=ft_;
+     //iftm_p[0]=ift_;
+     ftm_p[0].reset(ft_);
+     iftm_p[0].reset(ift_);
      if(nmod != (2 * sm_->numberOfTaylorTerms() - 1)) /* MFS */
        throw(AipsError("No multifield with pb-mosaic allowed"));
      for (Int k=1; k < (nmod); ++k){ 
-      ftm_p[k]=new PBMosaicFT(static_cast<PBMosaicFT &>(*ft_));
-      iftm_p[k]=new PBMosaicFT(static_cast<PBMosaicFT &>(*ift_));
+      //ftm_p[k]=new PBMosaicFT(static_cast<PBMosaicFT &>(*ft_));
+      //iftm_p[k]=new PBMosaicFT(static_cast<PBMosaicFT &>(*ift_));
+      ftm_p[k].reset(new PBMosaicFT(static_cast<PBMosaicFT &>(*ft_)));
+      iftm_p[k].reset(new PBMosaicFT(static_cast<PBMosaicFT &>(*ift_)));
     }
   }
   else if (ft.name() == "rGridFT") {
     ft_=new rGridFT(static_cast<rGridFT &>(ft));
     ift_=new rGridFT(static_cast<rGridFT &>(ft));
     // ftm_p[0]=CountedPtr<FTMachine>(ft_, False);
-    ftm_p[0]=ft_;
-    iftm_p[0]=ift_;
+    //ftm_p[0]=ft_;
+    //iftm_p[0]=ift_;
+    ftm_p[0].reset(ft_);
+    iftm_p[0].reset(ift_);
     for (Int k=1; k < (nmod); ++k){ 
-      ftm_p[k]=new rGridFT(static_cast<rGridFT &>(*ft_));
-      iftm_p[k]=new rGridFT(static_cast<rGridFT &>(*ift_));
+      //ftm_p[k]=new rGridFT(static_cast<rGridFT &>(*ft_));
+      //iftm_p[k]=new rGridFT(static_cast<rGridFT &>(*ift_));
+      ftm_p[k].reset(new rGridFT(static_cast<rGridFT &>(*ft_)));
+      iftm_p[k].reset(new rGridFT(static_cast<rGridFT &>(*ift_)));
     }
   }
   else if (ft.name() == "MultiTermFT") {
     ft_=new MultiTermFT(static_cast<MultiTermFT &>(ft));
     ift_=new MultiTermFT(static_cast<MultiTermFT &>(ft));
-    ftm_p[0]=ft_;
-    iftm_p[0]=ift_;
+    //ftm_p[0]=ft_;
+    //iftm_p[0]=ift_;
+    ftm_p[0].reset(ft_);
+    iftm_p[0].reset(ift_);
     for (Int k=1; k < (nmod); ++k){ 
-      ftm_p[k]=new MultiTermFT(static_cast<MultiTermFT &>(*ft_));
-      iftm_p[k]=new MultiTermFT(static_cast<MultiTermFT &>(*ift_));
+      //ftm_p[k]=new MultiTermFT(static_cast<MultiTermFT &>(*ft_));
+      //iftm_p[k]=new MultiTermFT(static_cast<MultiTermFT &>(*ift_));
+      ftm_p[k].reset(new MultiTermFT(static_cast<MultiTermFT &>(*ft_)));
+      iftm_p[k].reset(new MultiTermFT(static_cast<MultiTermFT &>(*ift_)));
     }
      for (Int k=0; k < (nmod); ++k){ 
       ftm_p[k]->setMiscInfo(sm_->getTaylorIndex(k));
@@ -256,22 +291,30 @@ void CubeSkyEquation::init(FTMachine& ft){
   else if (ft.name() == "LofarFTMachine") {
     ft_ = ft.clone();
     ift_= ft.clone();
-    ftm_p[0]=ft_;
-    iftm_p[0]=ift_;
+    //ftm_p[0]=ft_;
+    //iftm_p[0]=ift_;
+    ftm_p[0].reset(ft_);
+    iftm_p[0].reset(ift_);
     for (Int k=1; k < (nmod); ++k){ 
-      ftm_p[k] =ft.clone();
-      iftm_p[k]=ft.clone();
+      //ftm_p[k] =ft.clone();
+      //iftm_p[k]=ft.clone();
+      ftm_p[k].reset(ft.clone());
+      iftm_p[k].reset(ft.clone());
     }
   }
   else {
     ft_=new GridFT(static_cast<GridFT &>(ft));
     ift_=new GridFT(static_cast<GridFT &>(ft));
     // ftm_p[0]=CountedPtr<FTMachine>(ft_, False);
-    ftm_p[0]=ft_;
-    iftm_p[0]=ift_;
+    //ftm_p[0]=ft_;
+    //iftm_p[0]=ift_;
+    ftm_p[0].reset(ft_);
+    iftm_p[0].reset(ift_);
     for (Int k=1; k < (nmod); ++k){ 
-      ftm_p[k]=new GridFT(static_cast<GridFT &>(*ft_));
-      iftm_p[k]=new GridFT(static_cast<GridFT &>(*ift_));
+      //ftm_p[k]=new GridFT(static_cast<GridFT &>(*ft_));
+      //iftm_p[k]=new GridFT(static_cast<GridFT &>(*ift_));
+      ftm_p[k].reset(new GridFT(static_cast<GridFT &>(*ft_)));
+      iftm_p[k].reset(new GridFT(static_cast<GridFT &>(*ift_)));
     }
   }
 
@@ -461,17 +504,21 @@ void CubeSkyEquation::makeMosaicPSF(PtrBlock<TempImage<Float> * >& psfs){
      << "Will retry to make an approximate one without primary beam "
      << LogIO::POST;
   MPosition loc=iftm_p[0]->getLocation();
-  ftm_p[0]=new GridFT(1000000, 16, "SF", loc, 1.0, False);
-  iftm_p[0]=new GridFT(1000000, 16, "SF", loc, 1.0, False);
+  //ftm_p[0]=new GridFT(1000000, 16, "SF", loc, 1.0, False);
+  //iftm_p[0]=new GridFT(1000000, 16, "SF", loc, 1.0, False);
+  ftm_p[0].reset(new GridFT(1000000, 16, "SF", loc, 1.0, False));
+  iftm_p[0].reset(new GridFT(1000000, 16, "SF", loc, 1.0, False));
   ft_=&(*ftm_p[0]);
   ift_=&(*iftm_p[0]);
   // try again with simple ftmachines
   makeSimplePSF(psfs);
   //that 's the best psf you'd get
   //restore back MosaicFT machinas
-  ftm_p[0]=ft_back;
+  //ftm_p[0]=ft_back;
+  ftm_p[0].reset(ft_back);
   ft_=ft_back;
-  iftm_p[0]=ift_back;
+  //iftm_p[0]=ift_back;
+  iftm_p[0].reset(ift_back);
   ift_=ift_back;
 }
 
@@ -1093,14 +1140,16 @@ void CubeSkyEquation::sliceCube(CountedPtr<ImageInterface<Complex> >& slice,Int 
   if(typeOfSlice==0){    
     
     Double memoryMB=HostInfo::memoryTotal(true)/1024.0/(8.0*(sm_->numberOfModels()));
-    slice=new TempImage<Complex> (sliceIm->shape(), sliceIm->coordinates(), memoryMB);
+    //slice=new TempImage<Complex> (sliceIm->shape(), sliceIm->coordinates(), memoryMB);
+    slice.reset(new TempImage<Complex> (sliceIm->shape(), sliceIm->coordinates(), memoryMB));
     //slice.copyData(sliceIm);
     slice->set(Complex(0.0, 0.0));
     //slice->setCoordinateInfo(sm_->image(model).coordinates());
     delete sliceIm;
   }
   else{
-    slice=sliceIm;
+    //slice=sliceIm;
+    slice.reset(sliceIm);
   }
 
 }

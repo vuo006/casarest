@@ -31,11 +31,14 @@
 
 #include <casacore/casa/aips.h>
 #include <casacore/casa/Arrays/ArrayFwd.h>
-#include <casacore/casa/Utilities/CountedPtr.h>
+//#include <casacore/casa/Utilities/CountedPtr.h>
 #include <casacore/coordinates/Coordinates/CoordinateSystem.h>
 #include <components/ComponentModels/ComponentType.h>
 #include <components/ComponentModels/SkyCompBase.h>
 #include <casacore/measures/Measures/Stokes.h>
+
+template <typename... Args>
+using CountedPtr = std::shared_ptr<Args...>;
 
 namespace casacore { //# NAMESPACE CASACORE - BEGIN
 

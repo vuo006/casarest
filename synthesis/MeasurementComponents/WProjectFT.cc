@@ -29,7 +29,7 @@
 #include <casacore/casa/Quanta/UnitMap.h>
 #include <casacore/casa/Quanta/MVTime.h>
 #include <casacore/casa/Quanta/UnitVal.h>
-#include <casacore/casa/Utilities/CountedPtr.h>
+//#include <casacore/casa/Utilities/CountedPtr.h>
 #include <casacore/measures/Measures/Stokes.h>
 #include <casacore/coordinates/Coordinates/CoordinateSystem.h>
 #include <casacore/coordinates/Coordinates/DirectionCoordinate.h>
@@ -98,7 +98,8 @@ WProjectFT::WProjectFT( Int nWPlanes, Long icachesize, Int itilesize,
   tangentSpecified_p=False;
   lastIndex_p=0;
   useDoubleGrid_p=useDoublePrec;
-  wpConvFunc_p=new WPConvFunc();
+  //wpConvFunc_p=new WPConvFunc();
+  wpConvFunc_p.reset(new WPConvFunc());
 
 }
 WProjectFT::WProjectFT(Int nWPlanes, 
@@ -117,7 +118,8 @@ WProjectFT::WProjectFT(Int nWPlanes,
   tangentSpecified_p=False;
   mLocation_p=mLocation;
   lastIndex_p=0;
-  wpConvFunc_p=new WPConvFunc();
+  //wpConvFunc_p=new WPConvFunc();
+  wpConvFunc_p.reset(new WPConvFunc());
   useDoubleGrid_p=useDoublePrec;
 }
 WProjectFT::WProjectFT(
@@ -138,7 +140,8 @@ WProjectFT::WProjectFT(
   tangentSpecified_p=True;
   mLocation_p=mLocation;
   lastIndex_p=0;
-  wpConvFunc_p=new WPConvFunc();
+  //wpConvFunc_p=new WPConvFunc();
+  wpConvFunc_p.reset(new WPConvFunc());
   useDoubleGrid_p=useDoublePrec;
 }
 
@@ -358,7 +361,8 @@ void WProjectFT::initializeToVis(ImageInterface<Complex>& iimage,
   // If we are memory-based then read the image in and create an
   // ArrayLattice otherwise just use the PagedImage
   if(isTiled) {
-    lattice=CountedPtr<Lattice<Complex> > (image, False);
+    //lattice=CountedPtr<Lattice<Complex> > (image, False);
+    lattice.reset(image,[](void*){});
   }
   else {
     IPosition gridShape(4, nx, ny, npol, nchan);
@@ -374,7 +378,8 @@ void WProjectFT::initializeToVis(ImageInterface<Complex>& iimage,
     griddedData(blc, trc) = image->getSlice(start, image->shape());
     
     //if(arrayLattice) delete arrayLattice; arrayLattice=0;
-    arrayLattice = new ArrayLattice<Complex>(griddedData);
+    //arrayLattice = new ArrayLattice<Complex>(griddedData);
+    arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
     lattice=arrayLattice;
   }
   
@@ -478,7 +483,8 @@ void WProjectFT::initializeToSky(ImageInterface<Complex>& iimage,
   if(isTiled) {
     imageCache->flush();
     image->set(Complex(0.0));
-    lattice=CountedPtr<Lattice<Complex> > (image, False);
+    //lattice=CountedPtr<Lattice<Complex> > (image, False);
+    lattice.reset(image,[](void*){});
   }
   else {
     IPosition gridShape(4, nx, ny, npol, nchan);
@@ -489,7 +495,8 @@ void WProjectFT::initializeToSky(ImageInterface<Complex>& iimage,
       griddedData2=DComplex(0.0);
     }
     //if(arrayLattice) delete arrayLattice; arrayLattice=0;
-    arrayLattice = new ArrayLattice<Complex>(griddedData);
+    //arrayLattice = new ArrayLattice<Complex>(griddedData);
+    arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
     lattice=arrayLattice;
   }
   //AlwaysAssert(lattice, AipsError);
@@ -1142,7 +1149,8 @@ Bool WProjectFT::fromRecord(String& error, const RecordInterface& inRec)
     init(); 
     
     if(isTiled) {
-      lattice=CountedPtr<Lattice<Complex> > (image, False);
+      //lattice=CountedPtr<Lattice<Complex> > (image, False);
+      lattice.reset(image,[](void*){});
     }
     else {
       // Make the grid the correct shape and turn it into an array lattice
@@ -1158,7 +1166,8 @@ Bool WProjectFT::fromRecord(String& error, const RecordInterface& inRec)
       griddedData(blc, trc) = image->getSlice(start, image->shape());
       
       //if(arrayLattice) delete arrayLattice; arrayLattice=0;
-      arrayLattice = new ArrayLattice<Complex>(griddedData);
+      //arrayLattice = new ArrayLattice<Complex>(griddedData);
+      arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
       lattice=arrayLattice;
     }
     

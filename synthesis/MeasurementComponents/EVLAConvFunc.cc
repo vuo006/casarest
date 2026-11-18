@@ -406,10 +406,10 @@ namespace casacore{
     // // 							  wConvSize,polInUse));
     // // convWeightsCache[PAIndex] = new Array<Complex>(IPosition(4,convSize,convSize,
     // //    							     wConvSize,polInUse));
-    cfs.data = new Array<Complex>(IPosition(4,convSize,convSize,
-					    wConvSize,polInUse));
-    cfwts.data = new Array<Complex>(IPosition(4,convSize,convSize,
-					 wConvSize,polInUse));
+    //cfs.data = new Array<Complex>(IPosition(4,convSize,convSize, wConvSize,polInUse));
+    cfs.data.reset(new Array<Complex>(IPosition(4,convSize,convSize, wConvSize,polInUse)));
+    //cfwts.data = new Array<Complex>(IPosition(4,convSize,convSize, wConvSize,polInUse));
+    cfwts.data.reset(new Array<Complex>(IPosition(4,convSize,convSize, wConvSize,polInUse)));
     convFunc_l.reference(*cfs.data);
     convWeights_l.reference(*cfwts.data);
     convFunc_l=0;

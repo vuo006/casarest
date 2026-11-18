@@ -100,7 +100,8 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
   lastIndex_p=0;
   doneWeightImage_p=False;
   convWeightImage_p=0;
-  pbConvFunc_p=new SimplePBConvFunc();
+  //pbConvFunc_p=new SimplePBConvFunc();
+  pbConvFunc_p.reset(new SimplePBConvFunc());
     
   mLocation_p=mloc;
   useDoubleGrid_p=useDoublePrec;  
@@ -148,7 +149,8 @@ MosaicFT& MosaicFT::operator=(const MosaicFT& other)
     doneWeightImage_p=other.doneWeightImage_p;
     pbConvFunc_p=other.pbConvFunc_p;
     stokes_p=other.stokes_p;
-    if(!other.skyCoverage_p.null())
+    //if(!other.skyCoverage_p.null())
+    if(other.skyCoverage_p)
       skyCoverage_p=other.skyCoverage_p;
     else
       skyCoverage_p=0;
@@ -291,8 +293,9 @@ void MosaicFT::findConvFunction(const ImageInterface<Complex>& iimage,
   
   
   convSampling=1;
-  if(pbConvFunc_p.null())
-    pbConvFunc_p=new SimplePBConvFunc();
+  //if(pbConvFunc_p.null())
+  if(!pbConvFunc_p)
+    pbConvFunc_p.reset(new SimplePBConvFunc());
   pbConvFunc_p->setSkyJones(sj_p);
   pbConvFunc_p->findConvFunction(iimage, vb, convSampling, convFunc, weightConvFunc_p, convSizePlanes_p, convSupportPlanes_p, convRowMap_p);
   //For now only use one size and support
@@ -339,7 +342,8 @@ void MosaicFT::initializeToVis(ImageInterface<Complex>& iimage,
   // If we are memory-based then read the image in and create an
   // ArrayLattice otherwise just use the PagedImage
   if(isTiled) {
-    lattice=CountedPtr<Lattice<Complex> > (image, False);
+    //lattice=CountedPtr<Lattice<Complex> > (image, False);
+    lattice.reset(image, [](void*) {});
   }
   else {
     IPosition gridShape(4, nx, ny, npol, nchan);
@@ -355,7 +359,8 @@ void MosaicFT::initializeToVis(ImageInterface<Complex>& iimage,
     griddedData(blc, trc) = image->getSlice(start, image->shape());
     
     //if(arrayLattice) delete arrayLattice; arrayLattice=0;
-    arrayLattice = new ArrayLattice<Complex>(griddedData);
+    //arrayLattice = new ArrayLattice<Complex>(griddedData);
+    arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
     lattice=arrayLattice;
   }
   
@@ -445,7 +450,8 @@ void MosaicFT::initializeToSky(ImageInterface<Complex>& iimage,
   if(isTiled) {
     imageCache->flush();
     image->set(Complex(0.0));
-    lattice=CountedPtr<Lattice<Complex> >(image, False);
+    //lattice=CountedPtr<Lattice<Complex> >(image, False);
+    lattice.reset(image,[](void*){});
     if( !doneWeightImage_p && (convWeightImage_p==0)){
       
       convWeightImage_p=new  TempImage<Complex> (iimage.shape(), 
@@ -455,8 +461,8 @@ void MosaicFT::initializeToSky(ImageInterface<Complex>& iimage,
 
 
       convWeightImage_p->set(Complex(0.0));
-      weightLattice=convWeightImage_p;
-
+      //weightLattice=convWeightImage_p;
+      weightLattice.reset(convWeightImage_p);
     }
   }
   else {
@@ -468,7 +474,8 @@ void MosaicFT::initializeToSky(ImageInterface<Complex>& iimage,
       griddedData2=DComplex(0.0);
     }
     //if(arrayLattice) delete arrayLattice; arrayLattice=0;
-    arrayLattice = new ArrayLattice<Complex>(griddedData);
+    //arrayLattice = new ArrayLattice<Complex>(griddedData);
+    arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
     lattice=arrayLattice;
       
     if( !doneWeightImage_p && (convWeightImage_p==0)){
@@ -493,7 +500,8 @@ void MosaicFT::initializeToSky(ImageInterface<Complex>& iimage,
 	griddedWeight=Complex(0.0);
       }
       //if(weightLattice) delete weightLattice; weightLattice=0;
-      weightLattice = new ArrayLattice<Complex>(griddedWeight);
+      //weightLattice = new ArrayLattice<Complex>(griddedWeight);
+      weightLattice.reset(new ArrayLattice<Complex>(griddedWeight));
 
     }
 
@@ -590,7 +598,8 @@ void MosaicFT::finalizeToSky()
     imshp(2)=npol;
 
 
-    skyCoverage_p=new TempImage<Float> (imshp, coords);
+    //skyCoverage_p=new TempImage<Float> (imshp, coords);
+    skyCoverage_p.reset(new TempImage<Float> (imshp, coords));
     IPosition blc(4, (nx-image->shape()(0)+(nx%2==0))/2,
 		    (ny-image->shape()(1)+(ny%2==0))/2, 0, 0);
     IPosition stride(4, 1);
@@ -1397,7 +1406,8 @@ Bool MosaicFT::fromRecord(String& error, const RecordInterface& inRec)
     init(); 
     
     if(isTiled) {
-      lattice=CountedPtr<Lattice<Complex> > (image, False);
+      //lattice=CountedPtr<Lattice<Complex> > (image, False);
+      lattice.reset(image,[](void*){});
     }
     else {
       // Make the grid the correct shape and turn it into an array lattice
@@ -1413,7 +1423,8 @@ Bool MosaicFT::fromRecord(String& error, const RecordInterface& inRec)
       griddedData(blc, trc) = image->getSlice(start, image->shape());
       
       //if(arrayLattice) delete arrayLattice; arrayLattice=0;
-      arrayLattice = new ArrayLattice<Complex>(griddedData);
+      //arrayLattice = new ArrayLattice<Complex>(griddedData);
+      arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
       lattice=arrayLattice;
     }
     

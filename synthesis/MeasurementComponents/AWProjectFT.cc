@@ -469,7 +469,7 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
     MEpoch LAST;
     Double thisTime = getCurrentTimeStamp(vb);
     //    Array<Float> pointingOffsets = epJ->nearest(thisTime);
-    if (epJ_p.null()) return 0;
+    if (!epJ_p) return 0;
     Array<Float> pointingOffsets; epJ_p->nearest(thisTime,pointingOffsets);
     NAnt=pointingOffsets.shape()(2);
     l_off.resize(IPosition(3,1,1,NAnt)); // Poln x NChan x NAnt 
@@ -1074,7 +1074,9 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
     isTiled=False;
 
     if(isTiled){
-    	lattice=CountedPtr<Lattice<Complex> > (image, False);
+    	//lattice=CountedPtr<Lattice<Complex> > (image, False);
+        // tell lattice not to delete image 
+        lattice.reset(image,[](void*){});
     }
     else 
       {
@@ -1090,7 +1092,8 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 	IPosition start(4, 0);
 	griddedData(blc, trc) = image->getSlice(start, image->shape());
 	
-	arrayLattice = new ArrayLattice<Complex>(griddedData);
+	//arrayLattice = new ArrayLattice<Complex>(griddedData);
+	arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
 	lattice=arrayLattice;
       }
 
@@ -1257,14 +1260,16 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
       {
 	imageCache->flush();
 	image->set(Complex(0.0));
-	lattice=CountedPtr<Lattice<Complex> > (image, False);
+	//lattice=CountedPtr<Lattice<Complex> > (image, False);
+	lattice.reset(image, [](void*){});
       }
     else 
       {
 	IPosition gridShape(4, nx, ny, npol, nchan);
 	griddedData.resize(gridShape);
 	griddedData=Complex(0.0);
-	arrayLattice = new ArrayLattice<Complex>(griddedData);
+	//arrayLattice = new ArrayLattice<Complex>(griddedData);
+	arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
 	lattice=arrayLattice;
 	// if(useDoubleGrid_p) 
 	//   visResampler_p->initializeToSky(griddedData2, sumWeight);
@@ -1993,9 +1998,10 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 	// Might be changing the shape of sumWeight
 	init(); 
 	
-	if(isTiled) 
-    	  lattice=CountedPtr<Lattice<Complex> > (image, False);
-	else 
+	if(isTiled) {
+    	  //lattice=CountedPtr<Lattice<Complex> > (image, False);
+    	  lattice.reset(image, [](void*){});
+	} else 
 	  {
 	    //
 	    // Make the grid the correct shape and turn it into an
@@ -2012,7 +2018,8 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 	    IPosition trc(blc+image->shape()-stride);
 	    griddedData(blc, trc) = image->getSlice(start, image->shape());
 	    
-	    arrayLattice = new ArrayLattice<Complex>(griddedData);
+	    //arrayLattice = new ArrayLattice<Complex>(griddedData);
+	    arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
 	    lattice=arrayLattice;
 	  }
 	
@@ -2210,9 +2217,11 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
     //
     // Initialize the rotated CF.
     //
-    if (rotatedConvFunc_p.data.null()) 
+    //if (rotatedConvFunc_p.data.null()) 
+    if (!rotatedConvFunc_p.data) 
       {
-	rotatedConvFunc_p.data=new Array<Complex>();
+	//rotatedConvFunc_p.data=new Array<Complex>();
+	rotatedConvFunc_p.data.reset(new Array<Complex>());
 	// Copy everything else from cfs_p other than the data itself.
 	rotatedConvFunc_p.set(cfs_p);
 	(*rotatedConvFunc_p.data).assign(*cfs_p.data);

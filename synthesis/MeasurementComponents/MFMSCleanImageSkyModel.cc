@@ -326,7 +326,8 @@ Bool MFMSCleanImageSkyModel::solve(SkyEquation& se) {
 	      if(nchan>1) {
 		os << LogIO::NORMAL    // Loglevel PROGRESS
                    <<"Processing channel "<<chan<<" of 0 to "<<nchan-1<<LogIO::POST;
-		if(!cleaner[model].null()) cleaner[model]=0;
+		//if(!cleaner[model].null()) cleaner[model]=0;
+		if(cleaner[model]) cleaner[model]=nullptr;
 	      }
 	      
 	      blcDirty(3) = chan;
@@ -358,7 +359,8 @@ Bool MFMSCleanImageSkyModel::solve(SkyEquation& se) {
 		  }
 		}
 		if(!skipThisPlane){
-		  if(!cleaner[model].null()) {
+		  //if(!cleaner[model].null()) {
+		  if(cleaner[model]) {
 		    os << LogIO::NORMAL2    // Loglevel PROGRESS
                        << "Updating multiscale cleaner with new residual images"
 		       << LogIO::POST;
@@ -368,7 +370,8 @@ Bool MFMSCleanImageSkyModel::solve(SkyEquation& se) {
 		    os << LogIO::NORMAL2    // Loglevel PROGRESS
                        << "Creating multiscale cleaner with psf and residual images"
                        << LogIO::POST;
-		    cleaner[model]=new ImageMSCleaner(subPSF, subResid);
+		    //cleaner[model]=new ImageMSCleaner(subPSF, subResid);
+		    cleaner[model].reset(new ImageMSCleaner(subPSF, subResid));
 		    //setScales(*(cleaner[model]));
 		    cleaner[model]->setscales(userScaleSizes_p);
                     cleaner[model]->setSmallScaleBias(smallScaleBias_p);

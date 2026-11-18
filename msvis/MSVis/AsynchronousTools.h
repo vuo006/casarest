@@ -15,9 +15,12 @@
 
 #include <map>
 #include <queue>
+#include <iostream>
 
 using std::map;
 using std::queue;
+using std::string;
+using std::ostream;
 
 //using namespace casacore;
 

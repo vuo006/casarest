@@ -34,7 +34,7 @@
 #include <components/ComponentModels/ComponentType.h>
 #include <components/ComponentModels/Flux.h>
 #include <components/ComponentModels/SkyCompBase.h>
-#include <casacore/casa/Utilities/CountedPtr.h>
+//#include <casacore/casa/Utilities/CountedPtr.h>
 #include <casacore/casa/BasicSL/String.h>
 #include <casacore/measures/Measures/Stokes.h>
 

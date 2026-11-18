@@ -67,7 +67,8 @@ namespace casacore{
   {
     if (imShape.nelements() > CFDefs::NWPOS)
       resize(imShape(CFDefs::NWPOS), retainValues);
-    if ((imShape.nelements() > 0) && (!data.null()))
+    //if ((imShape.nelements() > 0) && (!data.null()))
+    if ((imShape.nelements() > 0) && (data))
       data->resize(imShape,retainValues);
   }
 } // end casa namespace

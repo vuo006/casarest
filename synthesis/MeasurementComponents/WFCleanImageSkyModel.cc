@@ -79,14 +79,18 @@ Int WFCleanImageSkyModel::add(ImageInterface<Float>& image,
 			      const Int maxNumXfr)
 {
   // Is this the first image?
-  if(imageImage_p.null()) {
+  //if(imageImage_p.null()) {
+  if(!imageImage_p) {
     // Create the facet images and copy the relevant region from the 
     // original image
-    imageImage_p=CountedPtr<ImageInterface<Float> >(&image, False);
+    //imageImage_p=CountedPtr<ImageInterface<Float> >(&image, False);
+    imageImage_p.reset(&image, [](void*){});
     facetImages_p.resize(nfacets_p);
     for (Int facet=0;facet<nfacets_p;facet++) {
-      facetImages_p[facet] = makeFacet(facet, image);
-      AlwaysAssert(!facetImages_p[facet].null(), AipsError);
+      //facetImages_p[facet] = makeFacet(facet, image);
+      facetImages_p[facet].reset(makeFacet(facet, image));
+      //AlwaysAssert(!facetImages_p[facet].null(), AipsError);
+      AlwaysAssert(facetImages_p[facet], AipsError);
       AlwaysAssert(MFCleanImageSkyModel::add(*facetImages_p[facet], maxNumXfr)==facet,
 		   AipsError);
     }
@@ -104,12 +108,16 @@ Bool WFCleanImageSkyModel::addMask(Int image, ImageInterface<Float>& mask)
   // Create the facet images and copy the relevant region from the 
   // original image
   AlwaysAssert(image>-1, AipsError);
-  if(maskImage_p.null()) {
-    maskImage_p=CountedPtr<ImageInterface<Float> >(&mask, False);
+  //if(maskImage_p.null()) {
+  if(!maskImage_p) {
+    //maskImage_p=CountedPtr<ImageInterface<Float> >(&mask, False);
+    maskImage_p.reset(&mask,[](void*){});
     facetMaskImages_p.resize(nfacets_p);
     for (Int facet=0;facet<nfacets_p;facet++) {
-      facetMaskImages_p[facet] = makeFacet(facet, mask);
-      AlwaysAssert(!facetMaskImages_p[facet].null(), AipsError);
+      //facetMaskImages_p[facet] = makeFacet(facet, mask);
+      facetMaskImages_p[facet].reset(makeFacet(facet, mask));
+      //AlwaysAssert(!facetMaskImages_p[facet].null(), AipsError);
+      AlwaysAssert(facetMaskImages_p[facet], AipsError);
       AlwaysAssert(MFCleanImageSkyModel::addMask(facet, *facetMaskImages_p[facet]),
 		   AipsError);
     }
@@ -127,12 +135,16 @@ Bool WFCleanImageSkyModel::addResidual(Int image,
   // Create the facet images and copy the relevant region from the 
   // original image
   AlwaysAssert(image>-1, AipsError);
-  if(residualImage_p.null()) {
-    residualImage_p=CountedPtr<ImageInterface<Float> >(&residual, False);
+  //if(residualImage_p.null()) {
+  if(!residualImage_p) {
+    //residualImage_p=CountedPtr<ImageInterface<Float> >(&residual, False);
+    residualImage_p.reset(&residual,[](void*){});
     facetResidualImages_p.resize(nfacets_p);
     for (Int facet=0;facet<nfacets_p;facet++) {
-      facetResidualImages_p[facet] = makeFacet(facet, residual);
-      AlwaysAssert(!facetResidualImages_p[facet].null(), AipsError);
+      //facetResidualImages_p[facet] = makeFacet(facet, residual);
+      facetResidualImages_p[facet].reset(makeFacet(facet, residual));
+      //AlwaysAssert(!facetResidualImages_p[facet].null(), AipsError);
+      AlwaysAssert(facetResidualImages_p[facet], AipsError);
       AlwaysAssert(MFCleanImageSkyModel::addResidual(facet, *facetResidualImages_p[facet]),
 		   AipsError);
     }
@@ -186,12 +198,16 @@ Bool WFCleanImageSkyModel::solve(SkyEquation& se) {
 ImageInterface<Float>& WFCleanImageSkyModel::getResidual(Int trueMod){
 
   if(trueMod==0){
-    if(residualImage_p.null()){
-      residualImage_p=new TempImage<Float>(imageImage_p->shape(), imageImage_p->coordinates());
+    //if(residualImage_p.null()){
+    if(!residualImage_p){
+      //residualImage_p=new TempImage<Float>(imageImage_p->shape(), imageImage_p->coordinates());
+      residualImage_p.reset(new TempImage<Float>(imageImage_p->shape(), imageImage_p->coordinates()));
       facetResidualImages_p.resize(nfacets_p);
       for (Int facet=0;facet<nfacets_p; ++facet) {
-	facetResidualImages_p[facet] = makeFacet(facet, *residualImage_p);
-	AlwaysAssert(!facetResidualImages_p[facet].null(), AipsError);	
+	//facetResidualImages_p[facet] = makeFacet(facet, *residualImage_p);
+	facetResidualImages_p[facet].reset(makeFacet(facet, *residualImage_p));
+	//AlwaysAssert(!facetResidualImages_p[facet].null(), AipsError);	
+	AlwaysAssert(facetResidualImages_p[facet], AipsError);	
       }
       
     }

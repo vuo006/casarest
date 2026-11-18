@@ -471,7 +471,8 @@ Int WBCleanImageSkyModel::writeResultsToDisk()
   {
 
     String alphaname,betaname;
-    if(  ( (imageNames[0]).substr( (imageNames[0]).length()-3 , 3 ) ).matches("tt0") )
+    //if(  ( (imageNames[0]).substr( (imageNames[0]).length()-3 , 3 ) ).matches("tt0") )
+    if( imageNames[0].substr(imageNames[0].length()-3,3) == "tt0" )
     {
 	    alphaname = (imageNames[0]).substr(0,(imageNames[0]).length()-3) + "alpha";
 	    betaname = (imageNames[0]).substr(0,(imageNames[0]).length()-3) + "beta";

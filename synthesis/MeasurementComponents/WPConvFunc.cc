@@ -351,10 +351,12 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 
 
   convSupportBlock_p.resize(actualConvIndex_p+1);
-  convSupportBlock_p[actualConvIndex_p]= new Vector<Int>();
+  //convSupportBlock_p[actualConvIndex_p]= new Vector<Int>();
+  convSupportBlock_p[actualConvIndex_p].reset(new Vector<Int>());
   convSupportBlock_p[actualConvIndex_p]->assign(convSupport);
   convFunctions_p.resize(actualConvIndex_p+1);
-  convFunctions_p[actualConvIndex_p]= new Cube<Complex>();
+  //convFunctions_p[actualConvIndex_p]= new Cube<Complex>();
+  convFunctions_p[actualConvIndex_p].reset(new Cube<Complex>());
   Int newConvSize=2*(max(convSupport)+2)*convSampling;
   
   if(newConvSize < convSize){

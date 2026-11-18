@@ -39,7 +39,7 @@
 #include <casacore/casa/Containers/Block.h>
 #include <casacore/casa/Arrays/Array.h>
 #include <casacore/casa/Arrays/Vector.h>
-#include <casacore/casa/Utilities/CountedPtr.h>
+//#include <casacore/casa/Utilities/CountedPtr.h>
 #include <casacore/scimath/Mathematics/ConvolveGridder.h>
 #include <casacore/lattices/Lattices/LatticeCache.h>
 #include <casacore/lattices/Lattices/ArrayLattice.h>

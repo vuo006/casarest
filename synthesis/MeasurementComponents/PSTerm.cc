@@ -36,7 +36,8 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 		    const Vector<Double>& uvScale,
 		    const Vector<Double>& uvOffset)
   {
-    psCtor_p   = new ConvolveGridder<Double, Complex>(shape, uvScale, uvOffset, "SF");
+    //psCtor_p   = new ConvolveGridder<Double, Complex>(shape, uvScale, uvOffset, "SF");
+    psCtor_p.reset( new ConvolveGridder<Double, Complex>(shape, uvScale, uvOffset, "SF"));
     sampling_p = (*psCtor_p).cSupport();
     support_p  = (*psCtor_p).cSampling();
   }
@@ -49,7 +50,8 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 			const Double wScale,
 			const Int inner)
   {
-    AlwaysAssert(psCtor_p.null()==False, SynthesisFTMachineError);
+    //AlwaysAssert(psCtor_p.null()==False, SynthesisFTMachineError);
+    AlwaysAssert(!psCtor_p==False, SynthesisFTMachineError);
 
     Int convSize = screen.shape()[0];
     Vector<Complex> correction(inner);

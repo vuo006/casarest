@@ -32,7 +32,7 @@
 #include <synthesis/MeasurementComponents/PixelatedConvFunc.h>
 #include <synthesis/MeasurementComponents/PBMathInterface.h>
 #include <casacore/casa/Containers/Block.h>
-#include <casacore/casa/Utilities/CountedPtr.h>
+//#include <casacore/casa/Utilities/CountedPtr.h>
 #include <casacore/casa/Arrays/ArrayFwd.h>
 
 namespace casacore{

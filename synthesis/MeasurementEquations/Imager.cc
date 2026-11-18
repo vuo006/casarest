@@ -363,7 +363,8 @@ Imager::Imager(const Imager & other)
 
 Imager &Imager::operator=(const Imager & other)
 {
-  if (!ms_p.null() && this != &other) {
+  //if (!ms_p.null() && this != &other) {
+  if (ms_p && this != &other) {
     *ms_p = *(other.ms_p);
   }
   if(this != &other){
@@ -384,7 +385,8 @@ Imager &Imager::operator=(const Imager & other)
     doTrackSource_p=other.doTrackSource_p;
     trackDir_p=other.trackDir_p;
     smallScaleBias_p=other.smallScaleBias_p;
-    if (!mssel_p.null() && this != &other) {
+    //if (!mssel_p.null() && this != &other) {
+    if (mssel_p && this != &other) {
       *mssel_p = *(other.mssel_p);
     }
     if (vs_p && this != &other) {
@@ -497,11 +499,14 @@ Bool Imager::open(MeasurementSet& theMs, Bool /*compress*/, Bool useModelCol)
 
   LogIO os(LogOrigin("Imager", "open()", WHERE));
   
-  if (!ms_p.null()) {
+  //if (!ms_p.null()) {
+  if (ms_p) {
     *ms_p = theMs;
   } else {
-    ms_p = new MeasurementSet(theMs);
-    AlwaysAssert(!ms_p.null(), AipsError);
+    //ms_p = new MeasurementSet(theMs);
+    ms_p.reset(new MeasurementSet(theMs));
+    //AlwaysAssert(!ms_p.null(), AipsError);
+    AlwaysAssert(ms_p, AipsError);
   }
   
 
@@ -539,7 +544,8 @@ Bool Imager::open(MeasurementSet& theMs, Bool /*compress*/, Bool useModelCol)
     // Now open the selected MeasurementSet to be initially the
     // same as the original MeasurementSet
 
-    mssel_p=new MeasurementSet(*ms_p);
+    //mssel_p=new MeasurementSet(*ms_p);
+    mssel_p.reset(new MeasurementSet(*ms_p));
     useModelCol_p=useModelCol;
     
     // Now create the VisSet
@@ -1301,7 +1307,8 @@ Bool Imager::setdata(const String& mode, const Vector<Int>& nchan,
   logSink_p.clearLocally();
   LogIO os(LogOrigin("imager", "data selection"), logSink_p);
 
-  if(ms_p.null()) {
+  //if(ms_p.null()) {
+  if(!ms_p) {
     os << LogIO::SEVERE << "Program logic error: MeasurementSet pointer ms_p not yet set"
        << LogIO::EXCEPTION;
     nullSelect_p=true;
@@ -1578,20 +1585,24 @@ Bool Imager::setdata(const String& mode, const Vector<Int>& nchan,
       }
     }
     if(!(exprNode.isNull())){
-      mssel_p = new MeasurementSet((*ms_p)(exprNode));
+      //mssel_p = new MeasurementSet((*ms_p)(exprNode));
+      mssel_p.reset(new MeasurementSet((*ms_p)(exprNode)));
     }
     else{
       // Null take all the ms ...setdata() blank means that
-      mssel_p = new MeasurementSet(*ms_p);
+      //mssel_p = new MeasurementSet(*ms_p);
+      mssel_p.reset(new MeasurementSet(*ms_p));
     }
-    AlwaysAssert(!mssel_p.null(), AipsError);
+    //AlwaysAssert(!mssel_p.null(), AipsError);
+    AlwaysAssert(mssel_p, AipsError);
     if(mssel_p->nrow()==0) {
       //delete mssel_p; 
       mssel_p=0;
       os << (be_calm ? LogIO::NORMAL4 : LogIO::WARN)
          << "Selection is empty: reverting to sorted MeasurementSet"
 	 << LogIO::POST;
-      mssel_p=new MeasurementSet(*ms_p);
+      //mssel_p=new MeasurementSet(*ms_p);
+      mssel_p.reset(new MeasurementSet(*ms_p));
       nullSelect_p=True;
     }
     else {
@@ -2469,7 +2480,8 @@ Bool Imager::feather(const String& image, const String& highRes,
 	LogSink& sink = imagelog.sink();
 	LogOrigin lor(String("imager"), String("feather()"));
 	LogMessage msg(lor);
-	if (!ms_p.null()) {
+	//if (!ms_p.null()) {
+	if (ms_p) {
 	  String info = "MeasurementSet is " + ms_p->tableName() + "\n";
 	  sink.postLocally(msg.message(info));
 	  ROMSHistoryColumns msHis(ms_p->history());
@@ -2874,7 +2886,8 @@ Bool Imager::uvrange(const Double& uvmin, const Double& uvmax)
 
     this->lock();
       
-    if(mssel_p.null()){ os << "Please setdata first before using uvrange " << LogIO::POST; return False; }
+    //if(mssel_p.null()){ os << "Please setdata first before using uvrange " << LogIO::POST; return False; }
+    if(!mssel_p){ os << "Please setdata first before using uvrange " << LogIO::POST; return False; }
 
 
      // use the average wavelength for the selected windows to convert
@@ -2941,13 +2954,15 @@ Bool Imager::uvrange(const Double& uvmin, const Double& uvmax)
 	    << LogIO::POST;
 	 delete mssel_p2;
      } else {
-       if (!mssel_p.null()) {
+       //if (!mssel_p.null()) {
+       if (mssel_p) {
 	     os << LogIO::NORMAL // Loglevel INFO
                 << "By UVRANGE selection previously selected number of rows "
                 << mssel_p->nrow() << "  are now reduced to "
                 << mssel_p2->nrow() << LogIO::POST; 
 	     //delete mssel_p; 
-	     mssel_p=mssel_p2;
+	     //mssel_p=mssel_p2;
+	     mssel_p.reset(mssel_p2);
 	     mssel_p->flush();
 	 }
      }
@@ -3453,7 +3468,8 @@ Bool Imager::updateresidual(const Vector<String>& model,
 	throw(AipsError("Could not do an updateresidual please use restore"));      
     addResiduals(residual);
     for (Int thismodel=0;thismodel<Int(residuals_p.nelements());++thismodel) {
-      if(!residuals_p[thismodel].null()) 
+      //if(!residuals_p[thismodel].null()) 
+      if(residuals_p[thismodel]) 
 	sm_p->addResidual(thismodel, *residuals_p[thismodel]);   
     }
     sm_p->solveResiduals(*se_p);
@@ -6290,7 +6306,8 @@ Bool Imager::plotsummary()
 
 Bool Imager::detached() const
 {
-  if (ms_p.null()) {
+  //if (ms_p.null()) {
+  if (!ms_p) {
     LogIO os(LogOrigin("imager", "detached()", WHERE));
     os << LogIO::SEVERE << 
       "imager is detached - cannot perform operation." << endl <<
@@ -6681,7 +6698,8 @@ Int Imager::interactivemask(const String& image, const String& mask,
     logSink_p.clearLocally();
     LogIO os(LogOrigin("imager", "iClean()"), logSink_p);
 
-    if(!ms_p.null()) {
+    //if(!ms_p.null()) {
+    if(ms_p) {
       //try
        {
        

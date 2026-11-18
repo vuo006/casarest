@@ -1246,7 +1246,8 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 	imageCache->flush();
 	image->set(Complex(0.0));
 	//lattice=image;
-	lattice=CountedPtr<Lattice<Complex> > (image, False);
+	//lattice=CountedPtr<Lattice<Complex> > (image, False);
+	lattice.reset(image, [](void *) {});
       }
     else 
       {
@@ -1254,7 +1255,8 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 	griddedData.resize(gridShape);
 	griddedData=Complex(0.0);
 //	if(arrayLattice) delete arrayLattice; arrayLattice=0;
-	arrayLattice = new ArrayLattice<Complex>(griddedData);
+	//arrayLattice = new ArrayLattice<Complex>(griddedData);
+	arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
 	lattice=arrayLattice;
 	visResampler_p->initializeToSky(griddedData, sumWeight);
       }
@@ -1312,7 +1314,8 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 	// Make a temporary CFStore object, set its internals
 	// (co-ordinate system, support size info., etc.) from the
 	// convolution weight function (cfwts_p).
-	CFStore rotatedCFWts_l; rotatedCFWts_l.data = new Array<Complex>();
+	//CFStore rotatedCFWts_l; rotatedCFWts_l.data = new Array<Complex>();
+	CFStore rotatedCFWts_l; rotatedCFWts_l.data.reset( new Array<Complex>());
 	rotatedCFWts_l.set(cfwts_p);
 
 	// Now rotate and put the rotated convolution weight function

@@ -17,7 +17,7 @@
 //# Inc., 675 Massachusetts Ave, Cambridge, MA 02139, USA.
 //#
 //# Correspondence concerning AIPS++ should be adressed as follows:
-//#        Internet email: aips2-request@nrao.edu.
+//#        internet email: aips2-request@nrao.edu.
 //#        Postal address: AIPS++ Project Office
 //#                        National Radio Astronomy Observatory
 //#                        520 Edgemont Road
@@ -72,12 +72,11 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 // <ul> Add more interface functions
 // <ul> Turn into DO
 // </todo>
-
 class IDL  {
 public:
 
   // The constructor will start IDL.
-  IDL(Int options=0);
+  IDL(int options=0);
 
   // Copy constructor
   IDL(const IDL &other);
@@ -89,25 +88,25 @@ public:
   ~IDL();
 
   // Run a sequence of IDL commands
-  Bool runCommands(const Vector<String>& commands, Bool log=True);
+  bool runCommands(const Vector<String>& commands, bool log=true);
 
   // Run a single IDL command
-  Bool runCommand(const String& command, Bool log=True);
+  bool runCommand(const String& command, bool log=true);
 
   // Send an array to IDL and name it
-  Bool sendArray(const Array<Float>& a, String aname);
+  bool sendArray(const Array<float>& a, String aname);
 
   // Get an array from IDL
-  Array<Float> getArray(String aname);
+  Array<float> getArray(String aname);
 
   // Get an scalar from IDL
-  Float getFloat(String aname);
+  float getfloat(String aname);
 
   // Get an scalar from IDL
-  Int getInt(String aname);
+  int getint(String aname);
 
   // Set the path inside IDL
-  Bool setPath(const Vector<String>&);
+  bool setPath(const Vector<String>&);
 
 protected:
 

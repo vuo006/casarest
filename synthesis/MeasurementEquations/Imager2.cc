@@ -2703,11 +2703,12 @@ Bool Imager::createFTMachine()
 
     // Make the re-gridder components.  Here, make the basic
     // re-sampler.
-    CountedPtr<VisibilityResamplerBase> visResamplerCtor = new VisibilityResampler();
+    //CountedPtr<VisibilityResamplerBase> visResamplerCtor = new VisibilityResampler();
+    CountedPtr<VisibilityResamplerBase> visResamplerCtor(new VisibilityResampler());
     // Make the multi-threaded re-sampler and supply the basic
     // re-sampler used in the worklet threads.
-    CountedPtr<VisibilityResamplerBase> mthVisResampler = new MultiThreadedVisibilityResampler(useDoublePrecGrid,
-											       visResamplerCtor);
+    //CountedPtr<VisibilityResamplerBase> mthVisResampler = new MultiThreadedVisibilityResampler(useDoublePrecGrid, visResamplerCtor);
+    CountedPtr<VisibilityResamplerBase> mthVisResampler(new MultiThreadedVisibilityResampler(useDoublePrecGrid, visResamplerCtor));
     // Now make the FTMachine
     if(facets_p>1) {
       os << LogIO::NORMAL // Loglevel INFO
@@ -2760,12 +2761,18 @@ Bool Imager::createFTMachine()
     //                            skyPosThreshold_p);
     //   }
     useDoublePrecGrid=False;
-    CountedPtr<ATerm> apertureFunction = createTelescopeATerm(*ms_p);
-    CountedPtr<ConvolutionFunction> awConvFunc = new AWConvFunc(apertureFunction);
-    CountedPtr<VisibilityResamplerBase> visResampler = new AWVisResampler();
-    CountedPtr<VisibilityResamplerBase> mthVisResampler = new MultiThreadedVisibilityResampler(useDoublePrecGrid,
-     											       visResampler);
-    CountedPtr<CFCache> cfcache = new CFCache();
+    //CountedPtr<ATerm> apertureFunction = createTelescopeATerm(*ms_p);
+    //CountedPtr<ConvolutionFunction> awConvFunc = new AWConvFunc(apertureFunction);
+    //CountedPtr<VisibilityResamplerBase> visResampler = new AWVisResampler();
+    //CountedPtr<VisibilityResamplerBase> mthVisResampler = new MultiThreadedVisibilityResampler(useDoublePrecGrid, visResampler);
+    //CountedPtr<CFCache> cfcache = new CFCache();
+
+    CountedPtr<ATerm> apertureFunction(createTelescopeATerm(*ms_p));
+    CountedPtr<ConvolutionFunction> awConvFunc(new AWConvFunc(apertureFunction));
+    CountedPtr<VisibilityResamplerBase> visResampler(new AWVisResampler());
+    CountedPtr<VisibilityResamplerBase> mthVisResampler(new MultiThreadedVisibilityResampler(useDoublePrecGrid, visResampler));
+    CountedPtr<CFCache> cfcache(new CFCache());
+
     cfcache->setCacheDir(cfCacheDirName_p.data());
     cfcache->initCache();
     ft_p = new AWProjectWBFT(wprojPlanes_p, cache_p/2, 
@@ -2843,12 +2850,16 @@ Bool Imager::createFTMachine()
       // 	}
       //      CountedPtr<ATerm> evlaAperture = new EVLAAperture();
       useDoublePrecGrid=False;
-      CountedPtr<ATerm> apertureFunction = createTelescopeATerm(*ms_p);
-      CountedPtr<ConvolutionFunction> awConvFunc=new AWConvFunc(apertureFunction);
-      CountedPtr<VisibilityResamplerBase> visResampler = new AWVisResampler();
-      CountedPtr<VisibilityResamplerBase> mthVisResampler = new MultiThreadedVisibilityResampler(useDoublePrecGrid,
-												 visResampler);
-      CountedPtr<CFCache> cfcache=new CFCache();
+      //CountedPtr<ATerm> apertureFunction = createTelescopeATerm(*ms_p);
+      //CountedPtr<ConvolutionFunction> awConvFunc=new AWConvFunc(apertureFunction);
+      //CountedPtr<VisibilityResamplerBase> visResampler = new AWVisResampler();
+      //CountedPtr<VisibilityResamplerBase> mthVisResampler = new MultiThreadedVisibilityResampler(useDoublePrecGrid, visResampler);
+      //CountedPtr<CFCache> cfcache=new CFCache();
+      CountedPtr<ATerm> apertureFunction(createTelescopeATerm(*ms_p));
+      CountedPtr<ConvolutionFunction> awConvFunc(new AWConvFunc(apertureFunction));
+      CountedPtr<VisibilityResamplerBase> visResampler(new AWVisResampler());
+      CountedPtr<VisibilityResamplerBase> mthVisResampler(new MultiThreadedVisibilityResampler(useDoublePrecGrid, visResampler));
+      CountedPtr<CFCache> cfcache(new CFCache());
       cfcache->setCacheDir(cfCacheDirName_p.data());
       cfcache->initCache();
       ft_p = new AWProjectFT(wprojPlanes_p, cache_p/2,
@@ -3030,8 +3041,10 @@ Bool Imager::updateSkyModel(const Vector<String>& model,
       }
     }
     images_p[thismodel]=0;
-    images_p[thismodel]=new PagedImage<Float>(model(thismodel));
-    AlwaysAssert(!images_p[thismodel].null(), AipsError);
+    //images_p[thismodel]=new PagedImage<Float>(model(thismodel));
+    images_p[thismodel].reset(new PagedImage<Float>(model(thismodel)));
+    //AlwaysAssert(!images_p[thismodel].null(), AipsError);
+    AlwaysAssert(!images_p[thismodel], AipsError);
     sm_p->updatemodel(thismodel, *images_p[thismodel]);
   } 
   if((complist !="") && Table::isReadable(complist)){
@@ -3186,8 +3199,10 @@ Bool Imager::createSkyEquation(const Vector<String>& image,
 	}
       }
       images_p[model]=0;
-      images_p[model]=new PagedImage<Float>(image(model));
-      AlwaysAssert(!images_p[model].null(), AipsError);
+      //images_p[model]=new PagedImage<Float>(image(model));
+      images_p[model].reset(new PagedImage<Float>(image(model)));
+      //AlwaysAssert(!images_p[model].null(), AipsError);
+      AlwaysAssert(images_p[model], AipsError);
 
       //Determining the number of XFR
       Int numOfXFR=nmodels_p+1;
@@ -3208,8 +3223,10 @@ Bool Imager::createSkyEquation(const Vector<String>& image,
  
       fluxMasks_p[model]=0;
       if(fluxMask(model)!=""&&Table::isReadable(fluxMask(model))) {
-	fluxMasks_p[model]=new PagedImage<Float>(fluxMask(model));
-	AlwaysAssert(!fluxMasks_p[model].null(), AipsError);
+	//fluxMasks_p[model]=new PagedImage<Float>(fluxMask(model));
+	fluxMasks_p[model].reset(new PagedImage<Float>(fluxMask(model)));
+	//AlwaysAssert(!fluxMasks_p[model].null(), AipsError);
+	AlwaysAssert(fluxMasks_p[model], AipsError);
         if(!sm_p->addFluxMask(model, *fluxMasks_p[model])) {
 	  os << LogIO::SEVERE << "Error adding flux mask " << model
 	     << " : " << fluxMask(model) << LogIO::POST;
@@ -3319,24 +3336,32 @@ Bool Imager::addResiduals(const Vector<String>& imageNames) {
     if(imageNames(thismodel)!="") {
       residuals_p[thismodel]=0;
       if(Table::isWritable(imageNames(thismodel))){
-	residuals_p[thismodel]=new PagedImage<Float>(imageNames(thismodel));
+	//residuals_p[thismodel]=new PagedImage<Float>(imageNames(thismodel));
+	residuals_p[thismodel].reset(new PagedImage<Float>(imageNames(thismodel)));
 	if(!(residuals_p[thismodel]->shape()).isEqual(images_p[thismodel]->shape())){
 	  residuals_p[thismodel]=0;
 	  removeTable(imageNames(thismodel));
 	}
       }
-      if(residuals_p[thismodel].null()){
+      //if(residuals_p[thismodel].null()){
+      if(!residuals_p[thismodel]){
 	if(Table::isReadable(imageNames(thismodel)))
 	   removeTable(imageNames(thismodel));
-	residuals_p[thismodel]=
-	  new PagedImage<Float> (TiledShape(images_p[thismodel]->shape(), 
-					    images_p[thismodel]->niceCursorShape()),
-			       images_p[thismodel]->coordinates(),
-				 imageNames(thismodel));
-	AlwaysAssert(!residuals_p[thismodel].null(), AipsError);
+	//residuals_p[thismodel]=
+	  //new PagedImage<Float> (TiledShape(images_p[thismodel]->shape(), 
+//					    images_p[thismodel]->niceCursorShape()),
+//			       images_p[thismodel]->coordinates(),
+//				 imageNames(thismodel));
+    residuals_p[thismodel].reset(new PagedImage<Float> (TiledShape(images_p[thismodel]->shape(),
+                      images_p[thismodel]->niceCursorShape()),
+                 images_p[thismodel]->coordinates(),
+               imageNames(thismodel)));
+	//AlwaysAssert(!residuals_p[thismodel].null(), AipsError);
+	AlwaysAssert(residuals_p[thismodel], AipsError);
 	residuals_p[thismodel]->setUnits(Unit("Jy/beam"));
       }
-      if(residuals_p[thismodel].null()) 
+      //if(residuals_p[thismodel].null()) 
+      if(!residuals_p[thismodel]) 
 	retval=False;
     }
     else{
@@ -3369,16 +3394,20 @@ void Imager::destroySkyEquation()
   for (Int model=0;model<Int(nmodels_p); ++model) {
     //As these are CountedPtrs....just assigning them to NULL 
     //get the objects out of context
-    if(!images_p[model].null())  
+    //if(!images_p[model].null())  
+    if(images_p[model])  
       images_p[model]=0;
     
-    if(!masks_p[model].null()) 
+    //if(!masks_p[model].null()) 
+    if(masks_p[model]) 
       masks_p[model]=0;
  
-   if(!fluxMasks_p[model].null()) 
+   //if(!fluxMasks_p[model].null()) 
+   if(fluxMasks_p[model]) 
      fluxMasks_p[model]=0;
     
-   if(!residuals_p[model].null()) 
+   //if(!residuals_p[model].null()) 
+   if(residuals_p[model]) 
      residuals_p[model]=0;
   }
   
@@ -3398,12 +3427,14 @@ Bool Imager::assertDefinedImageParameters() const
 
 Bool Imager::valid() const {
   LogIO os(LogOrigin("imager", "if(!valid()) return False", WHERE));
-  if(ms_p.null()) {
+  //if(ms_p.null()) {
+  if(!ms_p) {
     os << LogIO::SEVERE << "Program logic error: MeasurementSet pointer ms_p not yet set"
        << LogIO::POST;
     return False;
   }
-  if(mssel_p.null()) {
+  //if(mssel_p.null()) {
+  if(!mssel_p) {
     os << LogIO::SEVERE << "Program logic error: MeasurementSet pointer mssel_p not yet set"
        << LogIO::POST;
     return False;
@@ -3433,8 +3464,10 @@ Bool Imager::addMasksToSkyEquation(const Vector<String>& mask, const Vector<Bool
     masks_p[model]=0;
     */
       if(mask(model)!=""&&Table::isReadable(mask(model))) {
-	masks_p[model]=new PagedImage<Float>(mask(model));
-	AlwaysAssert(!masks_p[model].null(), AipsError);
+	//masks_p[model]=new PagedImage<Float>(mask(model));
+	masks_p[model].reset(new PagedImage<Float>(mask(model)));
+	//AlwaysAssert(!masks_p[model].null(), AipsError);
+	AlwaysAssert(masks_p[model], AipsError);
         if(!sm_p->addMask(model, *masks_p[model])) {
 	  os << LogIO::SEVERE << "Error adding mask " << model
 	     << " : " << mask(model) << LogIO::POST;
@@ -3505,7 +3538,8 @@ Bool Imager::openSubTables(){
    weathertab_p=Table(ms_p->weatherTableName(),
 		      TableLock(TableLock::UserNoReadLocking));
  if(ms_p->isWritable()){
-   hist_p= new MSHistoryHandler(*ms_p, "imager");
+   //hist_p= new MSHistoryHandler(*ms_p, "imager");
+   hist_p.reset(new MSHistoryHandler(*ms_p, "imager"));
  }
 return True;
 
@@ -3581,11 +3615,13 @@ Bool Imager::unlock(){
       weathertab_p.unlock();
   }
   for (Int thismodel=0;thismodel<Int(images_p.nelements());++thismodel) {
-    if ((images_p.nelements() > uInt(thismodel)) && (!images_p[thismodel].null())) {
+    //if ((images_p.nelements() > uInt(thismodel)) && (!images_p[thismodel].null())) {
+    if ((images_p.nelements() > uInt(thismodel)) && images_p[thismodel]) {
       images_p[thismodel]->table().relinquishAutoLocks(True);
       images_p[thismodel]->table().unlock();
     }
-    if ((residuals_p.nelements()> uInt(thismodel)) && (!residuals_p[thismodel].null())) {
+    //if ((residuals_p.nelements()> uInt(thismodel)) && (!residuals_p[thismodel].null())) {
+    if ((residuals_p.nelements()> uInt(thismodel)) && residuals_p[thismodel]) {
       residuals_p[thismodel]->table().relinquishAutoLocks(True);
       residuals_p[thismodel]->table().unlock();
     }
@@ -3896,7 +3932,8 @@ void Imager::writeHistory(LogIO& os){
   try{
 
     os.postLocally();
-    if(!hist_p.null())
+    //if(!hist_p.null())
+    if(hist_p)
       hist_p->addMessage(os);
   }catch (AipsError x) {
     oslocal << LogIO::SEVERE << "Caught exception: " << x.getMesg()
@@ -3909,7 +3946,8 @@ void Imager::writeCommand(LogIO& os){
   LogIO oslocal(LogOrigin("Imager", "writeCommand"));
   try{
     os.postLocally();
-    if(!hist_p.null())
+    //if(!hist_p.null())
+    if(hist_p)
       hist_p->cliCommand(os);
   }catch (AipsError x) {
     oslocal << LogIO::SEVERE << "Caught exception: " << x.getMesg()
@@ -4262,7 +4300,8 @@ void Imager::setMosaicFTMachine(Bool useDoublePrec){
     os << LogIO::NORMAL // Loglevel INFO
        << "Using antenna diameters for determining beams for gridding"
        << LogIO::POST;
-    CountedPtr<SimplePBConvFunc> mospb=new HetArrayConvFunc();
+    //CountedPtr<SimplePBConvFunc> mospb=new HetArrayConvFunc();
+    CountedPtr<SimplePBConvFunc> mospb(new HetArrayConvFunc());
     static_cast<MosaicFT &>(*ft_p).setConvFunc(mospb);
   }
   

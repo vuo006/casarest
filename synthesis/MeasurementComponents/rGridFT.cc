@@ -221,7 +221,8 @@ rGridFT& rGridFT::operator=(const rGridFT& other)
   rGridFT* rGridFT::clone()
   {
     rGridFT* newftm = new rGridFT(*this);
-     CountedPtr<VisibilityResamplerBase> newvisresampler = newftm->visResampler_p->clone();
+    //CountedPtr<VisibilityResamplerBase> newvisresampler = newftm->visResampler_p->clone();
+    CountedPtr<VisibilityResamplerBase> newvisresampler(newftm->visResampler_p->clone());
     newftm->visResampler_p = newvisresampler;
     return newftm;
   }
@@ -279,8 +280,10 @@ void rGridFT::init() {
   cfs_p.ySupport = gridder->cSupport();
   cfs_p.sampling.resize(2);
   cfs_p.sampling = gridder->cSampling();
-  if (cfs_p.rdata.null())
-      cfs_p.rdata = new Array<Double>(gridder->cFunction());
+  //if (cfs_p.rdata.null())
+  if (!cfs_p.rdata)
+      cfs_p.rdata.reset(new Array<Double>(gridder->cFunction()));
+      //cfs_p.rdata = new Array<Double>(gridder->cFunction());
   // else
   //   (*cfs_p.rdata) = gridder->cFunction();
     
@@ -348,7 +351,8 @@ void rGridFT::initializeToVis(ImageInterface<Complex>& iimage,
   // If we are memory-based then read the image in and create an
   // ArrayLattice otherwise just use the PagedImage
   if(isTiled) {
-    lattice=CountedPtr<Lattice<Complex> >(image, False);
+    //lattice=CountedPtr<Lattice<Complex> >(image, False);
+    lattice.reset(image,[](void*){});
   }
   else {
      IPosition gridShape(4, nx, ny, npol, nchan);
@@ -367,7 +371,8 @@ void rGridFT::initializeToVis(ImageInterface<Complex>& iimage,
      griddedData(blc, trc) = image->getSlice(start, image->shape());
 
      //if(arrayLattice) delete arrayLattice; arrayLattice=0;
-     arrayLattice = new ArrayLattice<Complex>(griddedData);
+     //arrayLattice = new ArrayLattice<Complex>(griddedData);
+     arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
      lattice=arrayLattice;
   }
 
@@ -445,7 +450,8 @@ void rGridFT::initializeToSky(ImageInterface<Complex>& iimage,
   if(isTiled) {
     imageCache->flush();
     image->set(Complex(0.0));
-    lattice=CountedPtr<Lattice<Complex> >(image, False);
+    //lattice=CountedPtr<Lattice<Complex> >(image, False);
+    lattice.reset(image,[](void*){});
   }
   else {
     IPosition gridShape(4, nx, ny, npol, nchan);
@@ -457,7 +463,8 @@ void rGridFT::initializeToSky(ImageInterface<Complex>& iimage,
     }
     //iimage.get(griddedData, False);
     //if(arrayLattice) delete arrayLattice; arrayLattice=0;
-    arrayLattice = new ArrayLattice<Complex>(griddedData);
+    //arrayLattice = new ArrayLattice<Complex>(griddedData);
+    arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
     lattice=arrayLattice;
   }
   // if(useDoubleGrid_p) visResampler_p->initializePutBuffers(griddedData2, sumWeight);
@@ -901,7 +908,8 @@ Bool rGridFT::fromRecord(String& error, const RecordInterface& inRec)
     init(); 
 
     if(isTiled) {
-      lattice=CountedPtr<Lattice<Complex> >(image, False);
+      //lattice=CountedPtr<Lattice<Complex> >(image, False);
+      lattice.reset(image,[](void*){});
     }
     else {
       // Make the grid the correct shape and turn it into an array lattice
@@ -916,7 +924,7 @@ Bool rGridFT::fromRecord(String& error, const RecordInterface& inRec)
       griddedData(blc, trc)=image->getSlice(start, image->shape());
       
       //if(arrayLattice) delete arrayLattice; arrayLattice=0;
-      arrayLattice = new ArrayLattice<Complex>(griddedData);
+      arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
       lattice=arrayLattice;
     }
 

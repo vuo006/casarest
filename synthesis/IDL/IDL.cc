@@ -17,7 +17,7 @@
 //# Inc., 675 Massachusetts Ave, Cambridge, MA 02139, USA.
 //#
 //# Correspondence concerning AIPS++ should be addressed as follows:
-//#        Internet email: aips2-request@nrao.edu.
+//#        internet email: aips2-request@nrao.edu.
 //#        Postal address: AIPS++ Project Office
 //#                        National Radio Astronomy Observatory
 //#                        520 Edgemont Road
@@ -51,7 +51,7 @@ void idl_output(int flags, char* buf, int n) {
 #endif
 }
 
-IDL::IDL(Int options)
+IDL::IDL(int options)
 {
   LogIO os(LogOrigin("IDL", "IDL::IDL()", WHERE));
 
@@ -86,17 +86,17 @@ IDL::IDL(const IDL& other)
   operator=(other);
 }
 
-Bool IDL::sendArray(const Array<Float>& a, String aname) {
+bool IDL::sendArray(const Array<float>& a, String aname) {
 
   LogIO os(LogOrigin("sendArray", "", WHERE));
 
 #ifdef HAVE_IDL_LIB
-  Bool del;
+  bool del;
   const float *data=a.getStorage(del);
   IDL_LONG dim[IDL_MAX_ARRAY_DIM];
-  uInt len;
+  uint len;
   len=0;
-  for (uInt i=0;i<a.shape().nelements();i++) {
+  for (uint i=0;i<a.shape().nelements();i++) {
     if(a.shape()(i)>1) {
       dim[i]=a.shape()(i);
       len++;
@@ -133,7 +133,7 @@ char* IDL::getIDLName(String aname) {
   return name;
 }
 
-Array<Float> IDL::getArray(String aname) {
+Array<float> IDL::getArray(String aname) {
 
   LogIO os(LogOrigin("getArray", "getArray", WHERE));
 
@@ -141,11 +141,11 @@ Array<Float> IDL::getArray(String aname) {
   IDL_VPTR v=IDL_FindNamedVariable(getIDLName(aname), 0);
   // Make a copy 
   if(v) {
-    IPosition shape(Int(v->value.arr->n_dim), 0);
-    for (Int i=0;i<Int(v->value.arr->n_dim);i++) {
-      shape(i)=Int(v->value.arr->dim[i]);
+    IPosition shape(int(v->value.arr->n_dim), 0);
+    for (int i=0;i<int(v->value.arr->n_dim);i++) {
+      shape(i)=int(v->value.arr->dim[i]);
     }
-    Array<Float> a(shape, (Float*)(v->value.arr->data));
+    Array<float> a(shape, (float*)(v->value.arr->data));
     os << "Copied IDL float array " <<  aname << " " << LogIO::POST;
     return a;
   }
@@ -155,7 +155,7 @@ Array<Float> IDL::getArray(String aname) {
 #else
     os << LogIO::SEVERE << "IDL not enabled" << LogIO::EXCEPTION;
 #endif
-  Array<Float> a;
+  Array<float> a;
   return a;
 }
 
@@ -175,23 +175,23 @@ IDL_VPTR IDL::getPointer(String aname) {
 }
 #endif
 
-Int IDL::getInt(String aname) {
+int IDL::getint(String aname) {
 
-  LogIO os(LogOrigin("getInt", "getInt", WHERE));
+  LogIO os(LogOrigin("getint", "getint", WHERE));
 
 #ifdef HAVE_IDL_LIB
-  return Int(getPointer(aname)->value.i);
+  return int(getPointer(aname)->value.i);
 #else
   return 0;
 #endif
 }
 
-Float IDL::getFloat(String aname) {
+float IDL::getfloat(String aname) {
 
-  LogIO os(LogOrigin("getFloat", "getFloat", WHERE));
+  LogIO os(LogOrigin("getfloat", "getfloat", WHERE));
 
 #ifdef HAVE_IDL_LIB
-  return Int(getPointer(aname)->value.f);
+  return int(getPointer(aname)->value.f);
 #else
   return 0;
 #endif
@@ -204,14 +204,14 @@ IDL::~IDL() {
 #endif
 }
 
-Bool IDL::runCommands(const Vector<String>& commands, Bool log) {
+bool IDL::runCommands(const Vector<String>& commands, bool log) {
 
   LogIO os(LogOrigin("runCommand", "runCommand(const Vector<String>& commands)", WHERE));
 
 #ifdef HAVE_IDL_LIB
   try {
-    Bool result = True;
-    for (uInt i=0; i < commands.nelements(); i++) {
+    bool result = True;
+    for (uint i=0; i < commands.nelements(); i++) {
       if(log) os << "IDL : " << commands(i) << LogIO::POST;
       char comm[commands(i).length()+1];
       commands(i).copy(comm, commands(i).length());
@@ -227,7 +227,7 @@ Bool IDL::runCommands(const Vector<String>& commands, Bool log) {
   return False;
 }
 
-Bool IDL::runCommand(const String& command, Bool log) {
+bool IDL::runCommand(const String& command, bool log) {
 
   LogIO os(LogOrigin("runCommand", "runCommand(const String command)", WHERE));
 #ifdef HAVE_IDL_LIB
@@ -246,9 +246,9 @@ Bool IDL::runCommand(const String& command, Bool log) {
   return False;
 }
 
-Bool IDL::setPath(const Vector<String>& paths) {
+bool IDL::setPath(const Vector<String>& paths) {
   String IDLCommand="!path=";
-  for (uInt i=0;i < paths.nelements(); i++) {
+  for (uint i=0;i < paths.nelements(); i++) {
     IDLCommand += "expand_path('+" + paths(i) + "')+':'+";
   }
   IDLCommand += "!path";

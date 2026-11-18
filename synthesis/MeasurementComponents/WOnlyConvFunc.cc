@@ -108,7 +108,8 @@ namespace casacore{
     TempImage<Complex> twoDPB(pbShape, coords);
 
     Int inner=convSize/convSampling, polInUse = 1;
-    cfs.data = new Array<Complex>(IPosition(4,convSize,convSize, wConvSize,polInUse));
+    //cfs.data = new Array<Complex>(IPosition(4,convSize,convSize, wConvSize,polInUse));
+    cfs.data.reset(new Array<Complex>(IPosition(4,convSize,convSize, wConvSize,polInUse)));
     convFunc_l.reference(*cfs.data);    convFunc_l=0;
     cfs.resize(wConvSize);
 

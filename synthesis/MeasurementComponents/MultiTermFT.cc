@@ -105,14 +105,18 @@ MultiTermFT::MultiTermFT(const MultiTermFT& other) : machineName_p("MultiTermFT"
     // Make the new instance of subftm_p here. 
     // Ideally, this should call "clone" of that ftm, so that the if/else stuff can all go away.
     if(other.subFTMname_p=="ft") 
-      { subftm_p = new GridFT(static_cast<const GridFT&>(*other.subftm_p)); }
+      { subftm_p.reset(new GridFT(static_cast<const GridFT&>(*other.subftm_p))); }
+      //{ subftm_p = new GridFT(static_cast<const GridFT&>(*other.subftm_p)); }
      else if(other.subFTMname_p=="wproject") 
-      { subftm_p = new WProjectFT(static_cast<const WProjectFT&>(*other.subftm_p)); }
+      { subftm_p.reset(new WProjectFT(static_cast<const WProjectFT&>(*other.subftm_p))); }
+      //{ subftm_p = new WProjectFT(static_cast<const WProjectFT&>(*other.subftm_p)); }
      else if(other.subFTMname_p=="wbawp") 
-      { subftm_p = new AWProjectWBFT(static_cast<const AWProjectWBFT&>(*other.subftm_p)); }
+      { subftm_p.reset(new AWProjectWBFT(static_cast<const AWProjectWBFT&>(*other.subftm_p))); }
+      //{ subftm_p = new AWProjectWBFT(static_cast<const AWProjectWBFT&>(*other.subftm_p)); }
      else if(other.subFTMname_p=="nift") 
       { 
-        subftm_p = ((rGridFT*)&(*other.subftm_p))->clone();
+        subftm_p.reset(((rGridFT*)&(*other.subftm_p))->clone());
+        //subftm_p = ((rGridFT*)&(*other.subftm_p))->clone();
 	//cout << "MTFT : copy constructor : newft->visresampler_p : " << &(*(subftm_p->visResampler_p)) << endl;
       }
     else 

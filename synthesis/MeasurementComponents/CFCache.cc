@@ -332,7 +332,8 @@ namespace casacore{
   void CFCache::cacheConvFunction(const Float pa, CFStore& cfs, 
 				  String nameQualifier,Bool savePA)
   {
-    if (cfs.data.null())
+    //if (cfs.data.null())
+    if (!cfs.data)
       throw(SynthesisError(LogMessage("Won't cache a NULL CFStore",
 				      LogOrigin("CFCache::cacheConvFunction")).message()));
     CoordinateSystem ftcoords;
@@ -501,7 +502,8 @@ namespace casacore{
     if (Dir.length() == 0) 
       throw(SynthesisFTMachineError("Cache dir. name not set"));
       
-    if (where < (Int)convFuncCache.nelements() && (!convFuncCache[where].data.null())) 
+    //if (where < (Int)convFuncCache.nelements() && (!convFuncCache[where].data.null())) 
+    if (where < (Int)convFuncCache.nelements() && (convFuncCache[where].data)) 
       return MEMCACHE;
 
     Int wConvSize, polInUse=2;
@@ -549,7 +551,8 @@ namespace casacore{
 	    polInUse = tmp.shape()(2);
 	    IPosition ts=tmp.shape(),ndx(4,0,0,0,0),ts2(4,0,0,0,0);
 	    Array<Complex> imBuf=tmp.get();
-	    if (convFuncCache[where].data.null())
+	    //if (convFuncCache[where].data.null())
+	    if (!convFuncCache[where].data)
 	      cfBuf.resize(IPosition(4,ts(0),ts(1), wConvSize,polInUse));
 	    //	      cfBuf = new CFType(IPosition(4,ts(0),ts(1), wConvSize,polInUse));
 	

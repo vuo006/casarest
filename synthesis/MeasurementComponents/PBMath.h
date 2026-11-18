@@ -41,7 +41,10 @@
 #include <synthesis/MeasurementComponents/BeamSquint.h>
 #include <casacore/images/Images/ImageInterface.h>
 #include <casacore/measures/Measures.h>
-#include <casacore/casa/Utilities/CountedPtr.h>
+//#include <casacore/casa/Utilities/CountedPtr.h>
+
+template<typename... Args>
+using CountedPtr = std::shared_ptr<Args...>;
 
 namespace casacore { //# NAMESPACE CASACORE - BEGIN
 

@@ -100,19 +100,23 @@ SkyCompRep::SkyCompRep(const ComponentType::Shape& shape,
 SkyCompRep::SkyCompRep(const Flux<Double>& flux,
 		       const ComponentShape& shape, 
 		       const SpectralModel& spectrum)
-  :itsShapePtr(shape.clone()),
-   itsSpectrumPtr(spectrum.clone()),
-   itsFlux(flux.copy()),
+//  :itsShapePtr(shape.clone()),
+//   itsSpectrumPtr(spectrum.clone()),
+   : itsFlux(flux.copy()),
    itsLabel(),
    itsOptParms()
 {
+  itsShapePtr.reset(shape.clone());
+  itsSpectrumPtr.reset(spectrum.clone());
   AlwaysAssert(ok(), AipsError);
 }
 
 SkyCompRep::SkyCompRep(const SkyCompRep& other) 
   :SkyCompBase(),
-   itsShapePtr(other.itsShapePtr->clone()),
-   itsSpectrumPtr(other.itsSpectrumPtr->clone()),
+   itsShapePtr(other.itsShapePtr),
+   itsSpectrumPtr(other.itsSpectrumPtr),
+   //itsShapePtr(other.itsShapePtr->clone()),
+   //itsSpectrumPtr(other.itsSpectrumPtr->clone()),
    itsFlux(other.itsFlux.copy()),
    itsLabel(other.itsLabel),
    itsOptParms(other.itsOptParms)
@@ -124,8 +128,10 @@ SkyCompRep::~SkyCompRep() {}
 
 SkyCompRep& SkyCompRep::operator=(const SkyCompRep& other) {
   if (this != &other) {
-    itsShapePtr = other.itsShapePtr->clone();
-    itsSpectrumPtr = other.itsSpectrumPtr->clone();
+    //itsShapePtr = other.itsShapePtr->clone();
+    //itsSpectrumPtr = other.itsSpectrumPtr->clone();
+    itsShapePtr = other.itsShapePtr;
+    itsSpectrumPtr = other.itsSpectrumPtr;
     itsFlux = other.itsFlux.copy();
     itsLabel = other.itsLabel;
     itsOptParms = other.itsOptParms;
@@ -152,7 +158,8 @@ ComponentShape& SkyCompRep::shape() {
 }
 
 void SkyCompRep::setShape(const ComponentShape& newShape) {
-  itsShapePtr = newShape.clone();
+  //itsShapePtr = newShape.clone();
+  itsShapePtr.reset(newShape.clone());
 }
 
 SpectralModel& SkyCompRep::spectrum() {
@@ -164,7 +171,8 @@ const SpectralModel& SkyCompRep::spectrum() const {
 }
 
 void SkyCompRep::setSpectrum(const SpectralModel& newSpectrum) {
-  itsSpectrumPtr = newSpectrum.clone();
+  //itsSpectrumPtr = newSpectrum.clone();
+  itsSpectrumPtr.reset(newSpectrum.clone());
 }
 
 String& SkyCompRep::label() {
@@ -412,9 +420,8 @@ Bool SkyCompRep::fromRecord(String& errorMessage,
 	     << "The default is a point component at the J2000 north pole"
 	     << LogIO::POST;
       const Unit deg("deg");
-      itsShapePtr = new PointShape(MDirection(Quantum<Double>(0.0, deg),
-					      Quantum<Double>(90.0, deg),
-					      MDirection::J2000));
+      //itsShapePtr = new PointShape(MDirection(Quantum<Double>(0.0, deg), Quantum<Double>(90.0, deg), MDirection::J2000));
+      itsShapePtr.reset(new PointShape(MDirection(Quantum<Double>(0.0, deg), Quantum<Double>(90.0, deg), MDirection::J2000)));
     }
   }
   {
@@ -448,7 +455,8 @@ Bool SkyCompRep::fromRecord(String& errorMessage,
 	     << "The component does not have a 'spectrum' field." << endl
 	     << "The default is a constant spectrum"
 	     << LogIO::POST;
-      itsSpectrumPtr = new ConstantSpectrum;
+      //itsSpectrumPtr = new ConstantSpectrum;
+      itsSpectrumPtr.reset(new ConstantSpectrum);
     }
   }
   {
@@ -514,7 +522,8 @@ Bool SkyCompRep::toRecord(String& errorMessage,
 }
 
 Bool SkyCompRep::ok() const {
-  if (itsShapePtr.null()) {
+  //if (itsShapePtr.null()) {
+  if ( !itsShapePtr ) {
     LogIO logErr(LogOrigin("SkyCompRep", "ok()"));
     logErr << LogIO::SEVERE << "Shape pointer is null"
            << LogIO::POST;
@@ -526,7 +535,8 @@ Bool SkyCompRep::ok() const {
            << LogIO::POST;
     return False;
   }
-  if (itsSpectrumPtr.null()) {
+  //if (itsSpectrumPtr.null()) {
+  if ( !itsSpectrumPtr) {
     LogIO logErr(LogOrigin("SkyCompRep", "ok()"));
     logErr << LogIO::SEVERE << "Spectrum pointer is null"
            << LogIO::POST;

@@ -1220,7 +1220,8 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 	imageCache->flush();
 	image->set(Complex(0.0));
 	//lattice=image;
-	lattice=CountedPtr<Lattice<Complex> > (image, False);
+	//lattice=CountedPtr<Lattice<Complex> > (image, False);
+	lattice.reset(image,[](void*){});
       }
     else 
       {
@@ -1228,7 +1229,8 @@ namespace casacore { //# NAMESPACE CASACORE - BEGIN
 	griddedData.resize(gridShape);
 	griddedData=Complex(0.0);
 //	if(arrayLattice) delete arrayLattice; arrayLattice=0;
-	arrayLattice = new ArrayLattice<Complex>(griddedData);
+	//arrayLattice = new ArrayLattice<Complex>(griddedData);
+	arrayLattice.reset(new ArrayLattice<Complex>(griddedData));
 	lattice=arrayLattice;
       }
     //AlwaysAssert(lattice, AipsError);
